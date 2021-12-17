@@ -76,10 +76,16 @@ Now we need to change the "*subfolder search field*" to "\*/dimple" (please note
 ### Step 4: read files
 After you you pressed "*OK*" in the *change settings*" dialogue, you will return to the main plugin window. Now, press "*read datasets*" and the program will parse all folders in the project directory for matching files. In our 3 dataset example, the "*current*" field should show "-1" (since we have not started browsing) and the "*total*" field should show "3".
 
+![](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/main_window_read.png)
+
 ### Step 5: browse datasets
+Now you can start browsing through your datasets. Use the arrow buttons ("<<<" & ">>>") to move forward and backward within the project directory.
 
-### Step 5: save/ load 
-This is an optional step, but you might want to 
-Note: this is optional
-In the future it is planned to also enable refinemet, some basic annotation functionality, status
+![](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/main_window_browse.png)
 
+### Step 6: save/ load 
+This is an optional step, but you might want to save your settings, so that next time there is no need to navigate to the project directory and to edit any of the search fields. Also, in case you have multiple projects, but you want to keep all the project definitions in a single location in your file system. Press "*save project*" and the plugin will save settings information (and information about each dataset - but this feature is not used, yet) in a json file. You don't have to provide an extenstion, the plugin will automatically call it .json (it will also ignore any other extension). Next time, press "*load project*" to read it the saved settings. 
+
+## Outlook
+
+The plugin is still under development, but in the (hopefully not too distanct future), it will also help with ligand building and refinement. It is also planned to have a selection mechanism for subsets of the data. And if you have any more ideas, please don't hesitate to get in touch!
