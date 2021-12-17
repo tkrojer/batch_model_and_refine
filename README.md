@@ -71,6 +71,7 @@ The defaults will work with the simple file structure shown above. If your filen
 ```
 Now we need to change the "*subfolder search field*" to "*/dimple" (please note that on windows you would need to use a backslash instead, i.e. "*\dimple"). Additionally, "*PDB file name*" and "*MTZ auto file name*" need to be changed to "final.pdb" and "final.mtz", respectively.
 
+![](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/data_paths_complex.png)
 
 ### Step 4: read files
 
