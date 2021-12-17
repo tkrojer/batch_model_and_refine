@@ -29,6 +29,9 @@ Currently, the script recognizes the following file types:
 
 ## Installation
 The plugin comes as a single python script and does not require installation of any additional packages. It works on any operating system (Windows, Mac and Linux) and was tested with COOT v0.9.6. All you need to do is download the python file and store it somewhere on your local computer or network drive.
+
+## Usage
+### Step 1: start plugin
 It can either be started from the command line by typing
 ```
 coot --script batch_model_and_refine.py
@@ -39,7 +42,12 @@ Calculate -> Run Script...
 ```
 Use the file selection dialog to locate the script, then press Open.  
 
-## Usage
-### Step 1: set folder structure and file name conventions
+### Step 2: set folder structure and file name conventions
 Folder and filenames can be anything, but it is strongly recommended to avoid spaces or special characters. This hasn’t been tested extensively, but chances are high that it will not work as expected if such characters are present.
 
+### Step 3: read files
+
+### Step 4: save/ load 
+Note: this is optional
+
+### Step 5: browse datasets
