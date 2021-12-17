@@ -38,3 +38,8 @@ or from the COOT gui, by selecting
 Calculate -> Run Script...
 ```
 Use the file selection dialog to locate the script, then press Open.  
+
+## Usage
+### Step 1: set folder structure and file name conventions
+Folder and filenames can be anything, but it is strongly recommended to avoid spaces or special characters. This hasn’t been tested extensively, but chances are high that it will not work as expected if such characters are present.
+
