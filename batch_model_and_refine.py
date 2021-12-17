@@ -106,7 +106,7 @@ class data_paths(object):
         self.window.connect("delete_event", gtk.main_quit)
         self.window.set_border_width(10)
         self.window.set_title("Data Paths")
-        self.window.set_default_size(1200, 400)
+        self.window.set_default_size(600, 300)
         self.vbox = gtk.VBox()
 
         frame = gtk.Frame(label='')
