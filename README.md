@@ -45,7 +45,7 @@ Use the file selection dialog to locate the script, then press Open and the foll
 ![](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/main_window.png)
 
 ### Step 2: select project directory
-Press "select project directory" and a folder selection dialog will appear that allows you to navigate to where the dataset subfolders are located.
+Press "*select project directory*" and a folder selection dialog will appear that allows you to navigate to where the dataset subfolders are located.
 
 ### Step 3: set folder structure and file name conventions
 Folder and filenames can be anything, but it is strongly recommended to avoid spaces or special characters. This hasn’t been tested extensively, but chances are high that it will not work as expected if such characters are present. Press "Change settings" and a new window will appear that allows you to view/ change the default settings:
