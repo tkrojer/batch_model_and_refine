@@ -48,14 +48,19 @@ Use the file selection dialog to locate the script, then press Open and the foll
 Press "*select project directory*" and a folder selection dialog will appear that allows you to navigate to where the dataset subfolders are located.
 
 ### Step 3: set folder structure and file name conventions
-Folder and filenames can be anything, but it is strongly recommended to avoid spaces or special characters. This hasn’t been tested extensively, but chances are high that it will not work as expected if such characters are present. Press "Change settings" and a new window will appear that allows you to view/ change the default settings:
+Folder and filenames can be anything, but it is strongly recommended to avoid spaces or special characters. This hasn’t been tested extensively, but chances are high that it will not work as expected if such characters are present. Press "*change settings*" and a new window will appear that allows you to view/ change the default settings:
 
 ![](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/data_paths_simple.png)
+
+The defaults will work with the simple file structure shown above. If your filenames differ and you decided to call your PDB files e.g. "*final.pdb*" then just alter the respective field and once done, press "*OK*" for the changes to become active. The situation is different if your files are stored with in a subfolder of the sample folder. A reason for this could be that you ran an auto-processing pipeline like [DIMPLE](https://www.ccp4.ac.uk/html/dimple.html) or [PIPEDREAM](https://www.globalphasing.com/buster/manual/pipedream/manual/index.html#_pipedream) which store their results in a separate folder. In this case, you need to change the "*subfolder search field*". Let's imagine our folder structure looks like this:
 
 
 ### Step 4: read files
 
-### Step 5: save/ load 
-Note: this is optional
-
 ### Step 5: browse datasets
+
+### Step 5: save/ load 
+This is an optional step, but you might want to 
+Note: this is optional
+In the future it is planned to also enable refinemet, some basic annotation functionality, status
+
