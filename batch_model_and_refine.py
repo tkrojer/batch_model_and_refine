@@ -512,7 +512,10 @@ class main_window(object):
             if not os.path.isfile(pdbFile):
                 # in case of broken sym links
                 continue
-            sample_ID = pdbFile.split('/')[len(self.projectDir.split('/'))]
+            if os.name == 'nt':
+                sample_ID = pdbFile.split('\\')[len(self.projectDir.split('\\'))]
+            else:
+                sample_ID = pdbFile.split('/')[len(self.projectDir.split('/'))]
             print('checking folder: {0!s}'.format(sample_ID))
             newSample = True
             for d in self.project_data['datasets']:
