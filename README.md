@@ -69,11 +69,12 @@ The defaults will work with the simple file structure shown above. If your filen
         ├── final.mtz
         └── final.pdb
 ```
-Now we need to change the "*subfolder search field*" to "\*/dimple" (please note that on windows you would need to use a backslash instead, i.e. "\*\dimple"). Additionally, "*PDB file name*" and "*MTZ auto file name*" need to be changed to "final.pdb" and "final.mtz", respectively.
+Now we need to change the "*subfolder search field*" to "\*/dimple" (please note that on windows you would need to use a backslash instead, i.e. "\*\dimple"). Additionally, "*PDB file name*" and "*MTZ auto file name*" need to be changed to "final.pdb" and "final.mtz", respectively. The asteriks (\*) is really important here, because it matches every subdirectory (i.e. dataset directory) in the project directory!
 
 ![](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/data_paths_complex.png)
 
 ### Step 4: read files
+After you you pressed "*OK*" in the *change settings*" dialogue, you will return to the main plugin window. Now, press "*read datasets*" and the program will parse all folders in the project directory for matching files. In our 3 dataset example, the "*current*" field should show "-1" (since we have not started browsing) and the "*total*" field should show "3".
 
 ### Step 5: browse datasets
 
