@@ -40,7 +40,8 @@ or from the COOT gui, by selecting
 ```
 Calculate -> Run Script...
 ```
-Use the file selection dialog to locate the script, then press Open.  
+Use the file selection dialog to locate the script, then press Open.
+![alt text](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/main_window.png)
 
 ### Step 2: set folder structure and file name conventions
 Folder and filenames can be anything, but it is strongly recommended to avoid spaces or special characters. This hasn’t been tested extensively, but chances are high that it will not work as expected if such characters are present.
