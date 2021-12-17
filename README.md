@@ -54,6 +54,23 @@ Folder and filenames can be anything, but it is strongly recommended to avoid sp
 
 The defaults will work with the simple file structure shown above. If your filenames differ and you decided to call your PDB files e.g. "*final.pdb*" then just alter the respective field and once done, press "*OK*" for the changes to become active. The situation is different if your files are stored with in a subfolder of the sample folder. A reason for this could be that you ran an auto-processing pipeline like [DIMPLE](https://www.ccp4.ac.uk/html/dimple.html) or [PIPEDREAM](https://www.globalphasing.com/buster/manual/pipedream/manual/index.html#_pipedream) which store their results in a separate folder. In this case, you need to change the "*subfolder search field*". Let's imagine our folder structure looks like this:
 
+```
+.
+├── proteinX-ligandY
+│   └── dimple
+│       ├── final.mtz
+│       └── final.pdb
+├── super_compound
+│   └── dimple
+│       ├── final.mtz
+│       └── final.pdb
+└── xtal_1
+    └── dimple
+        ├── final.mtz
+        └── final.pdb
+```
+Now we need to change the "*subfolder search field*" to "*/dimple" (please note that on windows you would need to use a backslash instead, i.e. "*\dimple"). Additionally, "*PDB file name*" and "*MTZ auto file name*" need to be changed to "final.pdb" and "final.mtz", respectively.
+
 
 ### Step 4: read files
 
