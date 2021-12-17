@@ -42,10 +42,13 @@ Calculate -> Run Script...
 ```
 Use the file selection dialog to locate the script, then press Open and the following window should appear alongside the main COOT window:
 
-![Hallo](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/main_window.png)
+![](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/main_window.png)
 
 ### Step 2: set folder structure and file name conventions
-Folder and filenames can be anything, but it is strongly recommended to avoid spaces or special characters. This hasn’t been tested extensively, but chances are high that it will not work as expected if such characters are present.
+Folder and filenames can be anything, but it is strongly recommended to avoid spaces or special characters. This hasn’t been tested extensively, but chances are high that it will not work as expected if such characters are present. Press "Change settings" and a new window will appear that allows you to view/ change the default settings:
+
+![](https://github.com/tkrojer/batch_model_and_refine/blob/main/images/main_window.png)
+
 
 ### Step 3: read files
 
