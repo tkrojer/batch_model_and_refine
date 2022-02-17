@@ -617,7 +617,7 @@ class main_window(object):
         modelList = [0]
         for m in sorted(glob.glob(os.path.join(self.projectDir, self.xtal, 'saved_models', 'model_*'))):
             n = m[m.rfind('/') + 1:].split('_')[1]
-            cycleList.append(int(n))
+            modelList.append(int(n))
         nextModel = str(max(modelList) + 1)
         return nextModel
 
