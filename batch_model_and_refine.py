@@ -96,6 +96,9 @@ def buster_refinement_params():
     return buster_refinement_params
 
 class data_paths(object):
+    """ settings window
+    """
+
 
     def __init__(self, settingsDict):
         self.settingsDict = settingsDict
@@ -505,6 +508,7 @@ class main_window(object):
         globString = self.project_data['settings']['glob_string']
         pdbName = self.project_data['settings']['pdb']
         mtzName = self.project_data['settings']['mtz']
+        cifName = self.project_data['settings']['ligand_cif']
         self.crystal_progressbar.set_fraction(0)
         n = 0
         n_folders = len(glob.glob(os.path.join(self.projectDir, globString, pdbName)))
@@ -530,6 +534,15 @@ class main_window(object):
             datasetDict['pdb'] = pdbFile
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
                 datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName)
+            foundCIF = False
+            for cifFile in glob.glob(os.path.join(self.projectDir, globString, cifName)):
+                if os.path.isfile(cifFile.replace('.cif', '.pdb')):
+                    datasetDict['ligand_cif'] = cifFile
+                    print("found ligand cif and corresponding pdb file: {0!s}".format(cifFile))
+                    foundCIF = True
+                    break
+            if not foundCIF:
+                print('WARNING: did not find ligand cif file for {0!s}'.format(sample_ID))
             self.project_data['datasets'].append((datasetDict))
             n += 1
             self.crystal_progressbar.set_fraction(float(n)/float(n_folders))
@@ -636,14 +649,3 @@ class main_window(object):
 if __name__ == '__main__':
     main_window().start_gui()
 
-#    menu = coot_menubar_menu("batch model & refine")
-#
-#    add_simple_coot_menu_menuitem(
-#        menu, "start gui",
-#        lambda func:
-#        main_window(False).start_gui())
-#
-#    add_simple_coot_menu_menuitem(
-#        menu, "start gui (PanDDA)",
-#        lambda func:
-#		main_window(True).start_gui())
