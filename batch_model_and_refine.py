@@ -616,7 +616,7 @@ class main_window(object):
     def get_next_model_number(self):
         modelList = [0]
         for m in sorted(glob.glob(os.path.join(self.projectDir, self.xtal, 'saved_models', 'model_*'))):
-            n = m[m.rfind('/') + 1:].split('_')[1]
+            n = m[m.rfind('/') + 1:].split('_')[1].replace('.pdb', '')
             modelList.append(int(n))
         nextModel = str(max(modelList) + 1)
         return nextModel
