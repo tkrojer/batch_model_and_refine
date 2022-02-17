@@ -44,7 +44,7 @@ def project_data():
             'pdb':                  'refine.pdb',
             'mtz':                  'refine.mtz',
             'mtz_free':             'free.mtz',
-            'ligand_cif':           'ligand.cif'
+            'ligand_cif':           'compound/*.cif'
             },
         'datasets': []
     }
@@ -445,10 +445,10 @@ class main_window(object):
 
         frame = gtk.Frame(label='Save')
         hbox = gtk.HBox()
-        self.save_next_button = gtk.Button(label="Save Model")
-        hbox.add(self.save_next_button)
-        self.save_next_button.connect("clicked", self.save_next)
-        self.save_next_button.set_sensitive(False)
+        self.save_current_model_button = gtk.Button(label="Save Model")
+        hbox.add(self.save_current_model_button)
+        self.save_current_model_button.connect("clicked", self.save_current_model)
+#        self.save_current_model_button.set_sensitive(False)
         frame.add(hbox)
         self.vbox.pack_start(frame)
 
@@ -613,27 +613,18 @@ class main_window(object):
         print('===> deleting ligand molecule')
         coot.close_molecule(self.mol_dict['ligand_cif'])
 
-    def save_next(self, widget):
-        if os.path.isfile(os.path.join(self.panddaDir, 'processed_datasets', self.xtal,
-                                       'modelled_structures', 'fitted-v0001.pdb')):
-            n = []
-            for p in sorted(glob.glob(os.path.join(self.panddaDir, 'processed_datasets', self.xtal,
-                                                   'modelled_structures', 'fitted-v*.pdb'))):
-                n.append(int(p[p.rfind('fitted-v')+8:].replace('.pdb','')))
-                new = 'fitted-v' + (4-len(str(max(n)+1))) * '0' + str(max(n)+1) + '.pdb'
-        else:
-                new = 'fitted-v0001.pdb'
-        coot.write_pdb_file(self.mol_dict['protein'], os.path.join(
-                    self.panddaDir,'processed_datasets', self.xtal, 'modelled_structures', new))
-        if os.path.isfile(os.path.join(self.panddaDir, 'processed_datasets', self.xtal, 'modelled_structures',
-                                       '{0!s}-pandda-model.pdb'.format(self.xtal))):
-            os.remove(os.path.join(self.panddaDir, 'processed_datasets', self.xtal, 'modelled_structures',
-                                   '{0!s}-pandda-model.pdb'.format(self.xtal)))
-        os.chdir(os.path.join(self.panddaDir, 'processed_datasets', self.xtal, 'modelled_structures'))
-        if os.name == 'nt':
-            os.popen('copy {0!s} {1!s}-pandda-model.pdb'.format(new, self.xtal))
-        else:
-            os.symlink(new, '{0!s}-pandda-model.pdb'.format(self.xtal))
+    def get_next_model_number(self):
+        modelList = [0]
+        for m in sorted(glob.glob(os.path.join(self.projectDir, self.xtal, 'saved_models', 'model_*'))):
+            n = m[m.rfind('/') + 1:].split('_')[1]
+            cycleList.append(int(n))
+        nextModel = str(max(modelList) + 1)
+        return nextModel
+
+    def save_current_model(self, widget):
+        self.create_saved_models_folder_if_not_exists()
+        nextModel = self.get_next_model_number()
+        self.save_model_to_saved_models_folder("model_{0!s}.pdb".format(nextModel))
 
     def backward(self, widget):
         self.index -= 1
@@ -649,7 +640,35 @@ class main_window(object):
     def refinement_parameters_button(self, widget):
         print('hallo')
 
+    def create_saved_models_folder_if_not_exists(self):
+        if not os.path.isdir(os.path.join(self.projectDir, self.xtal, 'saved_models')):
+            print('creating saved_models folder in {0!s}'.format(os.path.join(self.projectDir, self.xtal)))
+            os.mkdir(os.path.join(self.projectDir, self.xtal, 'saved_models'))
+
+    def save_model_to_saved_models_folder(self, fileName):
+        print("saving model as {0!s}".format(os.path.join(self.projectDir, self.xtal, 'saved_models', fileName)))
+        coot.write_pdb_file(self.mol_dict['pdb'], os.path.join(self.projectDir, self.xtal, 'saved_models', fileName))
+
+    def create_scripts_folder_if_not_exists(self):
+        if not os.path.isdir(os.path.join(self.projectDir, self.xtal, 'scripts')):
+            print('creating scripts folder in {0!s}'.format(os.path.join(self.projectDir, self.xtal)))
+            os.mkdir(os.path.join(self.projectDir, self.xtal, 'scripts'))
+
+    def get_next_refinement_cycle(self):
+        cycleList = [0]
+        for c in sorted(glob.glob(os.path.join(self.projectDir, self.xtal, 'Refine_*'))):
+            n = c[c.rfind('/') + 1:].split('_')[1]
+            cycleList.append(int(n))
+        nextCycle = str(max(cycleList) + 1)
+        return nextCycle
+
     def refine(self, widget):
+        self.create_saved_models_folder_if_not_exists()
+        self.create_scripts_folder_if_not_exists()
+        nextCycle = self.get_next_refinement_cycle()
+        self.save_model_to_saved_models_folder("input_model_for_cycle_{0!s}.pdb".format(nextCycle))
+
+
         print('hallo')
 
 if __name__ == '__main__':
