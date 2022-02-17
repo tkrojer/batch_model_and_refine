@@ -32,7 +32,7 @@ def defaults():
         'pdb':  'refine.pdb',
         'mtz': 'refine.pdb',
         'mtz_free': 'free.mtz',
-        'ligand_cif': 'ligand.cif'
+        'ligand_cif': 'compound/*.cif'
     }
     return defaults
 
@@ -434,10 +434,10 @@ class main_window(object):
         hbox = gtk.HBox()
         merge_ligand_button = gtk.Button(label="Merge Ligand")
         place_ligand_here_button = gtk.Button(label="Place Ligand here")
-        merge_ligand_button.set_sensitive(False)
+#        merge_ligand_button.set_sensitive(False)
         hbox.add(place_ligand_here_button)
         place_ligand_here_button.connect("clicked", self.place_ligand_here)
-        place_ligand_here_button.set_sensitive(False)
+#        place_ligand_here_button.set_sensitive(False)
         hbox.add(merge_ligand_button)
         merge_ligand_button.connect("clicked", self.merge_ligand_into_protein)
         frame.add(hbox)
@@ -561,6 +561,7 @@ class main_window(object):
         self.xtal = self.project_data['datasets'][self.index]['sample_ID']
         self.pdb = self.project_data['datasets'][self.index]['pdb']
         self.mtz = self.project_data['datasets'][self.index]['mtz']
+        self.ligand_cif = self.project_data['datasets'][self.index]['ligand_cif']
 
     def RefreshData(self):
 
@@ -571,7 +572,7 @@ class main_window(object):
         self.mol_dict = {
             'pdb': None,
             'mtz': None,
-            'cif': None
+            'ligand_cif': None
             }
 
         if self.index < 0:
@@ -592,20 +593,25 @@ class main_window(object):
         self.mol_dict['pdb'] = imol
         imol = coot.auto_read_make_and_draw_maps(self.mtz)
         self.mol_dict['mtz'] = imol
+
+        imol = coot.handle_read_draw_molecule_with_recentre(self.ligand_cif.replace('.cif', '.pdb'), 0)
+        self.mol_dict['ligand_cif'] = imol
+        coot.read_cif_dictionary(self.ligand_cif)
+
         coot.set_colour_map_rotation_on_read_pdb(0)
         coot.set_colour_map_rotation_for_map(0)
 
     def place_ligand_here(self, widget):
         print('===> moving ligand to pointer')
-        print('LIGAND: ', self.mol_dict['ligand'])
-        __main__.move_molecule_here(self.mol_dict['ligand'])
+        print('LIGAND: ', self.mol_dict['ligand_cif'])
+        __main__.move_molecule_here(self.mol_dict['ligand_cif'])
 
     def merge_ligand_into_protein(self, widget):
         print('===> merge ligand into protein structure')
         # merge_molecules(list(imols), imol) e.g. merge_molecules([1],0)
-        coot.merge_molecules_py([self.mol_dict['ligand']], self.mol_dict['protein'])
+        coot.merge_molecules_py([self.mol_dict['ligand_cif']], self.mol_dict['pdb'])
         print('===> deleting ligand molecule')
-        coot.close_molecule(self.mol_dict['ligand'])
+        coot.close_molecule(self.mol_dict['ligand_cif'])
 
     def save_next(self, widget):
         if os.path.isfile(os.path.join(self.panddaDir, 'processed_datasets', self.xtal,
