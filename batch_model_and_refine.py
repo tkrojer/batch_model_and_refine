@@ -587,8 +587,8 @@ class main_window(object):
                 datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName)
             foundCIF = False
             print("cifNamr", cifName)
-            print("glob",os.path.join(self.projectDir, globString, cifName))
-            for cifFile in glob.glob(os.path.join(self.projectDir, globString, cifName)):
+            print("glob",os.path.join(self.projectDir, sample_ID, cifName))
+            for cifFile in glob.glob(os.path.join(self.projectDir, sample_ID, cifName)):
                 if os.path.isfile(cifFile.replace('.cif', '.pdb')):
                     datasetDict['ligand_cif'] = cifFile
                     print("found ligand cif and corresponding pdb file: {0!s}".format(cifFile))
