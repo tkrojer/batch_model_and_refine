@@ -32,7 +32,8 @@ def defaults():
         'pdb':  'refine.pdb',
         'mtz': 'refine.pdb',
         'mtz_free': 'free.mtz',
-        'ligand_cif': 'compound/*.cif'
+        'ligand_cif': 'compound/*.cif',
+        'windows_refmac_path': 'C:\\'
     }
     return defaults
 
@@ -60,7 +61,8 @@ def dataset_information():
         'mtz_free':     '',
         'ligand_cif':   '',
         'refinement_program':   '',
-        'refinement_params':    ''
+        'refinement_params':    '',
+        'tag':          ''
     }
     return dataset
 
@@ -267,6 +269,21 @@ class pdbtools(object):
         return rmsd_angles
 
 
+class command_line_scripts(object):
+
+    def __init__(self):
+        print("hallo")
+
+    def refmac_windows(self):
+        x ="""
+        @echo off
+        call C:\CCP4-7\7.1\ccp4.setup
+        refmac5 hklin AUTOMATIC_DEFAULT_free.mtz hklout ref.mtz xyzin init.pdb xyzout ref.pdb < options.txt
+        """
+        # e.g. options.txt
+        # ncyc 5
+        # end
+
 class main_window(object):
     """ main window of the plugin
     """
@@ -289,6 +306,10 @@ class main_window(object):
 
         self.index_label = gtk.Label('')
         self.index_total_label = gtk.Label('')
+        self.pdb_label = gtk.Label('')
+        self.mtz_label = gtk.Label('')
+        self.mtz_free_label = gtk.Label('')
+        self.ligand_cif_label = gtk.Label('')
 
         self.xtal_label = gtk.Label('')
         self.resolution_label = gtk.Label('')
@@ -316,6 +337,8 @@ class main_window(object):
         hbox.add(change_settings_button)
         frame.add(hbox)
         self.vbox.pack_start(frame)
+
+        self.vbox.add(gtk.Label("\n"))
 
         frame = gtk.Frame(label='Datasets')
         vbox = gtk.VBox()
@@ -378,6 +401,8 @@ class main_window(object):
         hbox.add(outer_frame)
         self.vbox.add(hbox)
 
+        self.vbox.add(gtk.Label("\n"))
+
         frame = gtk.Frame(label='Navigator')
         vbox = gtk.VBox()
         PREVbutton = gtk.Button(label="<<<")
@@ -430,6 +455,26 @@ class main_window(object):
         hbox.add(outer_frame)
         self.vbox.add(hbox)
 
+        self.vbox.add(gtk.Label("\n"))
+
+        frame = gtk.Frame(label='Tags')
+        vbox = gtk.VBox()
+        hbox = gtk.HBox()
+        self.cb_tag = gtk.combo_box_new_text()
+#        self.cb_tag.connect("changed", self.select_tag)
+        hbox.add(self.cb_tag)
+        set_tag_button = gtk.Button(label="set tag")
+#        set_tag_button.connect("clicked", self.set_tag)
+        hbox.add(set_tag_button)
+        vbox.add(hbox)
+        select_by_tag_button = gtk.Button(label="select samples by tag")
+#        select_by_tag_button.connect("clicked", self.select_by_tag)
+        vbox.add(select_by_tag_button)
+        frame.add(vbox)
+        self.vbox.add(frame)
+
+        self.vbox.add(gtk.Label("\n"))
+
         frame = gtk.Frame(label='Ligand Modeling')
         hbox = gtk.HBox()
         merge_ligand_button = gtk.Button(label="Merge Ligand")
@@ -443,6 +488,8 @@ class main_window(object):
         frame.add(hbox)
         self.vbox.pack_start(frame)
 
+        self.vbox.add(gtk.Label("\n"))
+
         frame = gtk.Frame(label='Save')
         hbox = gtk.HBox()
         self.save_current_model_button = gtk.Button(label="Save Model")
@@ -451,6 +498,8 @@ class main_window(object):
 #        self.save_current_model_button.set_sensitive(False)
         frame.add(hbox)
         self.vbox.pack_start(frame)
+
+        self.vbox.add(gtk.Label("\n"))
 
         frame = gtk.Frame(label='Refinement')
         vbox = gtk.VBox()
@@ -464,6 +513,8 @@ class main_window(object):
         vbox.add(refine_button)
         frame.add(vbox)
         self.vbox.pack_start(frame)
+
+        self.vbox.add(gtk.Label("\n"))
 
         cancel_button = gtk.Button(label="Cancel")
         cancel_button.connect("clicked", self.cancel)
@@ -535,6 +586,8 @@ class main_window(object):
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
                 datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName)
             foundCIF = False
+            print("cifNamr", cifName)
+            print("glob",os.path.join(self.projectDir, globString, cifName))
             for cifFile in glob.glob(os.path.join(self.projectDir, globString, cifName)):
                 if os.path.isfile(cifFile.replace('.cif', '.pdb')):
                     datasetDict['ligand_cif'] = cifFile
@@ -556,6 +609,13 @@ class main_window(object):
         self.resolution_label.set_label(pdb.resolution_high())
         self.r_free_label.set_label(pdb.r_free())
         self.r_work_label.set_label(pdb.r_work())
+#        self.pdb_label.set_label()
+#        self.mtz_label.set_label()
+#        self.mtz_free_label.set_label()
+#        self.ligand_cif_label.set_label()
+
+
+
 
     def update_params(self):
         self.xtal = self.project_data['datasets'][self.index]['sample_ID']
@@ -572,6 +632,7 @@ class main_window(object):
         self.mol_dict = {
             'pdb': None,
             'mtz': None,
+            'mtz_free': None,
             'ligand_cif': None
             }
 
@@ -637,9 +698,6 @@ class main_window(object):
     def cancel(self, widget):
         self.window.destroy()
 
-    def refinement_parameters_button(self, widget):
-        print('hallo')
-
     def create_saved_models_folder_if_not_exists(self):
         if not os.path.isdir(os.path.join(self.projectDir, self.xtal, 'saved_models')):
             print('creating saved_models folder in {0!s}'.format(os.path.join(self.projectDir, self.xtal)))
@@ -662,12 +720,19 @@ class main_window(object):
         nextCycle = str(max(cycleList) + 1)
         return nextCycle
 
+    def refinement_parameters_button(self, widget):
+        print('hallo')
+
+    def prepare_refinement_batch_script(self):
+        print('hallo')
+
     def refine(self, widget):
         self.create_saved_models_folder_if_not_exists()
         self.create_scripts_folder_if_not_exists()
         nextCycle = self.get_next_refinement_cycle()
-        self.save_model_to_saved_models_folder("input_model_for_cycle_{0!s}.pdb".format(nextCycle))
-
+        pdbin = "input_model_for_cycle_{0!s}.pdb".format(nextCycle)
+        self.save_model_to_saved_models_folder(pdbin)
+        self.prepare_refinement_batch_script()
 
         print('hallo')
 
