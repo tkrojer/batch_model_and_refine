@@ -432,7 +432,7 @@ class main_window(object):
         table.attach(frame, 1, 2, 0, 1)
 
         frame = gtk.Frame()
-        frame.add(gtk.Label('Resolution'))
+        frame.add(gtk.Label('ligand CIF'))
         table.attach(frame, 0, 1, 1, 2)
         frame = gtk.Frame()
         frame.add(self.ligand_cif_label)
@@ -446,7 +446,7 @@ class main_window(object):
         table.attach(frame, 1, 2, 2, 3)
 
         frame = gtk.Frame()
-        frame.add(gtk.Label('ligand CIF'))
+        frame.add(gtk.Label('Resolution'))
         table.attach(frame, 0, 1, 3, 4)
         frame = gtk.Frame()
         frame.add(self.resolution_label)
@@ -625,6 +625,7 @@ class main_window(object):
         self.r_free_label.set_label(pdb.r_free())
         self.r_work_label.set_label(pdb.r_work())
         self.space_group_label.set_label(pdb.spacegroup())
+        print('ligand_cif', self.ligand_cif)
         if os.name == 'nt':
             cif = self.ligand_cif.split('\\')[len(self.ligand_cif.split('\\')-1)].replace('.cif', '')
         else:
