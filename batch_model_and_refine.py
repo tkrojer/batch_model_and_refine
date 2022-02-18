@@ -315,6 +315,7 @@ class main_window(object):
         self.resolution_label = gtk.Label('')
         self.r_work_label = gtk.Label('')
         self.r_free_label = gtk.Label('')
+        self.space_group_label = gtk.Label('')
 
 
     def start_gui(self):
@@ -353,7 +354,7 @@ class main_window(object):
 
         outer_frame = gtk.Frame()
         hbox = gtk.HBox()
-        table = gtk.Table(7, 4, False)
+        table = gtk.Table(5, 4, False)
 
         frame = gtk.Frame()
         frame.add(gtk.Label('Current'))
@@ -369,33 +370,33 @@ class main_window(object):
         frame.add(self.index_total_label)
         table.attach(frame, 3, 4, 0, 1)
 
-        frame = gtk.Frame()
-        frame.add(gtk.Label('PDB'))
-        table.attach(frame, 0, 1, 1, 2)
-        frame = gtk.Frame()
-        frame.add(self.index_label)
-        table.attach(frame, 1, 2, 1, 2)
+#        frame = gtk.Frame()
+#        frame.add(gtk.Label('PDB'))
+#        table.attach(frame, 0, 1, 1, 2)
+#        frame = gtk.Frame()
+#        frame.add(self.index_label)
+#        table.attach(frame, 1, 2, 1, 2)
 
-        frame = gtk.Frame()
-        frame.add(gtk.Label('MTZ'))
-        table.attach(frame, 2, 3, 1, 2)
-        frame = gtk.Frame()
-        frame.add(self.index_total_label)
-        table.attach(frame, 3, 4, 1, 2)
+#        frame = gtk.Frame()
+#        frame.add(gtk.Label('MTZ'))
+#        table.attach(frame, 2, 3, 1, 2)
+#        frame = gtk.Frame()
+#        frame.add(self.index_total_label)
+#        table.attach(frame, 3, 4, 1, 2)
 
-        frame = gtk.Frame()
-        frame.add(gtk.Label('MTZ free'))
-        table.attach(frame, 0, 1, 2, 3)
-        frame = gtk.Frame()
-        frame.add(self.index_label)
-        table.attach(frame, 1, 2, 2, 3)
+#        frame = gtk.Frame()
+#        frame.add(gtk.Label('MTZ free'))
+#        table.attach(frame, 0, 1, 2, 3)
+#        frame = gtk.Frame()
+#        frame.add(self.index_label)
+#        table.attach(frame, 1, 2, 2, 3)
 
-        frame = gtk.Frame()
-        frame.add(gtk.Label('CIF'))
-        table.attach(frame, 2, 3, 2, 3)
-        frame = gtk.Frame()
-        frame.add(self.index_total_label)
-        table.attach(frame, 3, 4, 2, 3)
+#        frame = gtk.Frame()
+#        frame.add(gtk.Label('CIF'))
+#        table.attach(frame, 2, 3, 2, 3)
+#        frame = gtk.Frame()
+#        frame.add(self.index_total_label)
+#        table.attach(frame, 3, 4, 2, 3)
 
         outer_frame.add(table)
         hbox.add(outer_frame)
@@ -434,22 +435,36 @@ class main_window(object):
         frame.add(gtk.Label('Resolution'))
         table.attach(frame, 0, 1, 1, 2)
         frame = gtk.Frame()
-        frame.add(self.resolution_label)
+        frame.add(self.ligand_cif_label)
         table.attach(frame, 1, 2, 1, 2)
 
         frame = gtk.Frame()
-        frame.add(gtk.Label('Rwork'))
+        frame.add(gtk.Label('Space group'))
         table.attach(frame, 0, 1, 2, 3)
         frame = gtk.Frame()
-        frame.add(self.r_work_label)
+        frame.add(self.space_group_label)
         table.attach(frame, 1, 2, 2, 3)
 
         frame = gtk.Frame()
-        frame.add(gtk.Label('Rfree'))
+        frame.add(gtk.Label('ligand CIF'))
         table.attach(frame, 0, 1, 3, 4)
         frame = gtk.Frame()
-        frame.add(self.r_free_label)
+        frame.add(self.resolution_label)
         table.attach(frame, 1, 2, 3, 4)
+
+        frame = gtk.Frame()
+        frame.add(gtk.Label('Rwork'))
+        table.attach(frame, 0, 1, 4, 5)
+        frame = gtk.Frame()
+        frame.add(self.r_work_label)
+        table.attach(frame, 1, 2, 4, 5)
+
+        frame = gtk.Frame()
+        frame.add(gtk.Label('Rfree'))
+        table.attach(frame, 0, 1, 5, 6)
+        frame = gtk.Frame()
+        frame.add(self.r_free_label)
+        table.attach(frame, 1, 2, 5, 6)
 
         outer_frame.add(table)
         hbox.add(outer_frame)
@@ -609,13 +624,12 @@ class main_window(object):
         self.resolution_label.set_label(pdb.resolution_high())
         self.r_free_label.set_label(pdb.r_free())
         self.r_work_label.set_label(pdb.r_work())
-#        self.pdb_label.set_label()
-#        self.mtz_label.set_label()
-#        self.mtz_free_label.set_label()
-#        self.ligand_cif_label.set_label()
-
-
-
+        self.space_group_label.set_label(pdb.spacegroup())
+        if os.name == 'nt':
+            cif = self.ligand_cif.split('\\')[len(self.ligand_cif.split('\\')-1)].replace('.cif', '')
+        else:
+            cif = self.ligand_cif.split('/')[len(self.ligand_cif.split('/')-1)].replace('.cif', '')
+        self.ligand_cif_label.set_label(cif)
 
     def update_params(self):
         self.xtal = self.project_data['datasets'][self.index]['sample_ID']
