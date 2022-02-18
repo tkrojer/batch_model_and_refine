@@ -627,9 +627,9 @@ class main_window(object):
         self.space_group_label.set_label(pdb.spacegroup())
         print('ligand_cif', self.ligand_cif)
         if os.name == 'nt':
-            cif = self.ligand_cif.split('\\')[len(self.ligand_cif.split('\\')-1)].replace('.cif', '')
+            cif = self.ligand_cif.split('\\')[len(self.ligand_cif.split('\\'))-1].replace('.cif', '')
         else:
-            cif = self.ligand_cif.split('/')[len(self.ligand_cif.split('/')-1)].replace('.cif', '')
+            cif = self.ligand_cif.split('/')[len(self.ligand_cif.split('/')) - 1].replace('.cif', '')
         self.ligand_cif_label.set_label(cif)
 
     def update_params(self):
