@@ -674,9 +674,10 @@ class main_window(object):
         imol = coot.auto_read_make_and_draw_maps(self.mtz)
         self.mol_dict['mtz'] = imol
 
-        imol = coot.handle_read_draw_molecule_with_recentre(self.ligand_cif.replace('.cif', '.pdb'), 0)
-        self.mol_dict['ligand_cif'] = imol
-        coot.read_cif_dictionary(self.ligand_cif)
+        if os.path.isfile(self.ligand_cif.replace('.cif', '.pdb')):
+            imol = coot.handle_read_draw_molecule_with_recentre(self.ligand_cif.replace('.cif', '.pdb'), 0)
+            self.mol_dict['ligand_cif'] = imol
+            coot.read_cif_dictionary(self.ligand_cif)
 
         coot.set_colour_map_rotation_on_read_pdb(0)
         coot.set_colour_map_rotation_for_map(0)
