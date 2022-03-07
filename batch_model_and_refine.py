@@ -278,15 +278,83 @@ class command_line_scripts(object):
     def __init__(self):
         print("hallo")
 
-    def refmac_windows(self):
-        x ="""
-        @echo off
-        call C:\CCP4-7\7.1\ccp4.setup
-        refmac5 hklin AUTOMATIC_DEFAULT_free.mtz hklout ref.mtz xyzin init.pdb xyzout ref.pdb < options.txt
-        """
-        # e.g. options.txt
-        # ncyc 5
-        # end
+    def create_refinement_in_progress_file(self):
+        f = open('refinement_in_progress', 'w')
+        f.write('')
+        f.close()
+
+
+    def refmac_windows_input_file(self, nextCycle, mtz_free, ligand_cif, project_data, xtal):
+        os.chdir(os.path.join(project_data, xtal, "scripts"))
+
+        params = (
+            'ncyc 5\n'
+            'end\n'
+        )
+        f = open('params_{0!s}.inp'.format(nextCycle), 'w')
+        f.write(params)
+        f.close()
+
+        libin = ''
+        if ligand_cif:
+            libin = "libin " + ligand_cif
+
+        cmd = (
+        "@echo off\n"
+        "call C:\CCP4-7\7.1\ccp4.setup\n"
+        "refmac5"
+        " hklin ..\{0!s} hklout ..\Refine_{1!s}\\refine.mtz ".format(mtz_free, nextCycle) +
+        " xyzin ..\saved_models\input_model_for_cycle_{0!s} xyzout ..\Refine_{1!s}\\refine.pdb ".format(nextCycle, nextCycle) +
+        libin +
+        "< params_{0!s}.inp\n".format(nextCycle) +
+        "chdir ..\n"
+        "copy Refine_{0!s}\rrefine.pdb .\n".format(nextCycle) +
+        "copy Refine_{0!s}\rrefine.mtz .\n".format(nextCycle) +
+        "del refinement_in_progress"
+        )
+        f = open('refmac_{0!s}.bat'.format(nextCycle), 'w')
+        f.write(cmd)
+        f.close()
+
+    def giant_quick_refine_refmac(self):
+        cmd = "giant.quick_refine input.pdb=MID2-x0054-ensemble-model.pdb mtz=free.mtz cif=VT00188.cif params=multi-state-restraints.refmac.params"
+
+    def coot_refmac(self):
+        pdb_in_filename = "/Users/tobkro/tmp/init.pdb"
+        pdb_out_filename = "/Users/tobkro/tmp/Refine_4/refine.pdb"
+        mtz_in_filename = "/Users/tobkro/tmp/AUTOMATIC_DEFAULT_free.mtz"
+        mtz_out_filename = "/Users/tobkro/tmp/Refine_4/refine.mtz"
+        extra_cif_lib_filename = ""
+        imol_refmac_count = 0
+        swap_map_colours_post_refmac = 0
+        imol_mtz_molecule = 0
+        show_diff_map_flag = 0
+        phase_combine_flag = 0
+        phib_fom_pair = "dummy"
+        force_n_cycles = 5
+        make_molecules_flag = 0
+        ccp4i_project_dir = ""
+        f_col = ""
+        sig_f_col = ""
+        r_free_col = ""
+
+        __main__.run_refmac_by_filename(pdb_in_filename,
+                                        pdb_out_filename,
+                                        mtz_in_filename,
+                                        mtz_out_filename,
+                                        extra_cif_lib_filename,
+                                        imol_refmac_count,
+                                        swap_map_colours_post_refmac,
+                                        imol_mtz_molecule,
+                                        show_diff_map_flag,
+                                        phase_combine_flag,
+                                        phib_fom_pair,
+                                        force_n_cycles,
+                                        make_molecules_flag,
+                                        ccp4i_project_dir,
+                                        f_col,
+                                        sig_f_col,
+                                        r_free_col)
 
 class main_window(object):
     """ main window of the plugin
@@ -616,6 +684,7 @@ class main_window(object):
             if not foundCIF:
                 print('WARNING: did not find ligand cif file for {0!s}'.format(sample_ID))
             self.project_data['datasets'].append((datasetDict))
+            print('datasetDict', datasetDict)
             n += 1
             self.crystal_progressbar.set_fraction(float(n)/float(n_folders))
         self.crystal_progressbar.set_fraction(0)
@@ -743,18 +812,35 @@ class main_window(object):
     def refinement_parameters_button(self, widget):
         print('hallo')
 
-    def prepare_refinement_batch_script(self):
+    def prepare_refinement_batch_script(self, nextCycle):
         print('hallo')
+        if os.name == 'nt':
+            command_line_scripts.refmac_windows_input_file(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
+
+    def remove_files_from_previous_cycle(self):
+        os.remove('refine.pdb')
+        os.remove('refine.mtz')
+
+    def run_refinement_batch_script(self, nextCycle):
+        print("hallo")
 
     def refine(self, widget):
         self.create_saved_models_folder_if_not_exists()
         self.create_scripts_folder_if_not_exists()
+
+        if not os.path.isfile('refinement_in_progress'):
+            command_line_scripts.create_refinement_in_progress_file()
+        else:
+            print('ERROR: refinement in progress; please try again later')
+
+        self.remove_files_from_previous_cycle()
         nextCycle = self.get_next_refinement_cycle()
         pdbin = "input_model_for_cycle_{0!s}.pdb".format(nextCycle)
         self.save_model_to_saved_models_folder(pdbin)
-        self.prepare_refinement_batch_script()
 
-        print('hallo')
+        self.prepare_refinement_batch_script(nextCycle)
+
+        self.run_refinement_batch_script(nextCycle)
 
 if __name__ == '__main__':
     main_window().start_gui()
