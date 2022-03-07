@@ -656,8 +656,10 @@ class main_window(object):
                 continue
             if os.name == 'nt':
                 sample_ID = pdbFile.split('\\')[len(self.projectDir.split('\\'))]
+#                sample_ID = pdbFile.split('\\')[len(pdbFile.split('\\'))]
             else:
                 sample_ID = pdbFile.split('/')[len(self.projectDir.split('/'))]
+#                sample_ID = pdbFile.split('/')[len(pdbFile.split('/'))]
             print('checking folder: {0!s}'.format(sample_ID))
             newSample = True
             for d in self.project_data['datasets']:
@@ -669,7 +671,7 @@ class main_window(object):
             if newSample:
                 datasetDict = dataset_information()
                 datasetDict['sample_ID'] = sample_ID
-            datasetDict['pdb'] = pdbFile
+            datasetDict['pdb'] = os.path.normpath(pdbFile)
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
                 datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName)
             foundCIF = False
