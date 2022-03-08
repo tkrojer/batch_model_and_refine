@@ -250,7 +250,10 @@ class pdbtools(object):
 
     def resolution_high(self):
         resolution_high = ''
-        for line in open(self.pdb):
+#        for line in open(self.pdb):
+        print("self.pdb", self.pdb)
+        print("repr(self.pdb)", repr(self.pdb))
+        for line in open(repr(self.pdb)):
             if line.startswith('REMARK   3   RESOLUTION RANGE HIGH (ANGSTROMS) :'):
                 resolution_high = line.split()[7]
                 break
@@ -654,12 +657,15 @@ class main_window(object):
             if not os.path.isfile(pdbFile):
                 # in case of broken sym links
                 continue
-            if os.name == 'nt':
-                sample_ID = pdbFile.split('\\')[len(self.projectDir.split('\\'))]
-#                sample_ID = pdbFile.split('\\')[len(pdbFile.split('\\'))]
-            else:
-                sample_ID = pdbFile.split('/')[len(self.projectDir.split('/'))]
-#                sample_ID = pdbFile.split('/')[len(pdbFile.split('/'))]
+#            if os.name == 'nt':
+#                sample_ID = pdbFile.split('\\')[len(self.projectDir.split('\\'))]
+##                sample_ID = pdbFile.split('\\')[len(pdbFile.split('\\'))]
+#            else:
+#                sample_ID = pdbFile.split('/')[len(self.projectDir.split('/'))]
+##                sample_ID = pdbFile.split('/')[len(pdbFile.split('/'))]
+            sample_ID = pdbFile.split(os.seq)[len(self.projectDir.split(os.sep))]
+
+
             print('checking folder: {0!s}'.format(sample_ID))
             newSample = True
             for d in self.project_data['datasets']:
@@ -671,7 +677,7 @@ class main_window(object):
             if newSample:
                 datasetDict = dataset_information()
                 datasetDict['sample_ID'] = sample_ID
-            datasetDict['pdb'] = os.path.normpath(pdbFile)
+            datasetDict['pdb'] = pdbFile
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
                 datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName)
             foundCIF = False
