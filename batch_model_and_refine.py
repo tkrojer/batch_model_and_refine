@@ -251,7 +251,8 @@ class pdbtools(object):
     def resolution_high(self):
         resolution_high = ''
 #        for line in open(self.pdb):
-        for line in open(self.pdb.replace('/', os.sep)):
+        print('self.pdb', self.pdb)
+        for line in open(self.pdb):
             if line.startswith('REMARK   3   RESOLUTION RANGE HIGH (ANGSTROMS) :'):
                 resolution_high = line.split()[7]
                 break
@@ -675,7 +676,7 @@ class main_window(object):
             if newSample:
                 datasetDict = dataset_information()
                 datasetDict['sample_ID'] = sample_ID
-            datasetDict['pdb'] = pdbFile.replace(os.sep, '/')
+            datasetDict['pdb'] = r"{}".format(pdbFile)
             print('pdb', datasetDict['pdb'])
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
                 datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName)
