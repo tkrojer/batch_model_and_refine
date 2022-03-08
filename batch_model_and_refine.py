@@ -33,8 +33,8 @@ import json
 def defaults():
     defaults = {
         'glob_string':    '*',
-        'pdb':  'refine.pdb',
-        'mtz': 'refine.pdb',
+        'pdb':  'init.pdb',
+        'mtz': 'init.pdb',
         'mtz_free': 'free.mtz',
         'ligand_cif': 'compound/*.cif',
         'windows_refmac_path': 'C:\\'
@@ -46,8 +46,8 @@ def project_data():
         'settings': {
             'project_directory':    '',
             'glob_string':          '*',
-            'pdb':                  'refine.pdb',
-            'mtz':                  'refine.mtz',
+            'pdb':                  'init.pdb',
+            'mtz':                  'init.mtz',
             'mtz_free':             'free.mtz',
             'ligand_cif':           'compound/*.cif'
             },
@@ -250,10 +250,7 @@ class pdbtools(object):
 
     def resolution_high(self):
         resolution_high = ''
-#        for line in open(self.pdb):
-        print("self.pdb", self.pdb)
-        print("repr(self.pdb)", repr(self.pdb))
-        for line in open(repr(self.pdb)):
+        for line in open(self.pdb):
             if line.startswith('REMARK   3   RESOLUTION RANGE HIGH (ANGSTROMS) :'):
                 resolution_high = line.split()[7]
                 break
@@ -677,12 +674,13 @@ class main_window(object):
             if newSample:
                 datasetDict = dataset_information()
                 datasetDict['sample_ID'] = sample_ID
-            datasetDict['pdb'] = pdbFile
+            datasetDict['pdb'] = pdbFile.replace(os.sep, '/')
+            print('pdb', datasetDict['pdb'])
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
                 datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName)
             foundCIF = False
-            print("cifNamr", cifName)
-            print("glob",os.path.join(self.projectDir, sample_ID, cifName))
+#            print("cifNamr", cifName)
+#            print("glob",os.path.join(self.projectDir, sample_ID, cifName))
             for cifFile in glob.glob(os.path.join(self.projectDir, sample_ID, cifName)):
                 if os.path.isfile(cifFile.replace('.cif', '.pdb')):
                     datasetDict['ligand_cif'] = cifFile
