@@ -251,9 +251,8 @@ class pdbtools(object):
     def resolution_high(self):
         resolution_high = ''
 #        for line in open(self.pdb):
-        print('--> self.pdb', r"{}".format(self.pdb))
-        print('==> self.pdb', self.pdb.replace('\\\\','\\'))
-        for line in open(self.pdb.replace('\\\\','\\')):
+        print('--> self.pdb', self.pdb)
+        for line in open(self.pdb):
             if line.startswith('REMARK   3   RESOLUTION RANGE HIGH (ANGSTROMS) :'):
                 resolution_high = line.split()[7]
                 break
@@ -677,8 +676,9 @@ class main_window(object):
             if newSample:
                 datasetDict = dataset_information()
                 datasetDict['sample_ID'] = sample_ID
-            datasetDict['pdb'] = r"{}".format(pdbFile)
+            datasetDict['pdb'] = repr(pdbFile)
             print('pdb', datasetDict['pdb'])
+            print('repr(pdb)', repr(datasetDict['pdb']))
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
                 datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName)
             foundCIF = False
