@@ -663,7 +663,7 @@ class main_window(object):
 #            else:
 #                sample_ID = pdbFile.split('/')[len(self.projectDir.split('/'))]
 ##                sample_ID = pdbFile.split('/')[len(pdbFile.split('/'))]
-            sample_ID = pdbFile.split(os.seq)[len(self.projectDir.split(os.sep))]
+            sample_ID = pdbFile.split(os.sep)[len(self.projectDir.split(os.sep))]
 
 
             print('checking folder: {0!s}'.format(sample_ID))
