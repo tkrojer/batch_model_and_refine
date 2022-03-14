@@ -286,7 +286,7 @@ class command_line_scripts(object):
         f.close()
 
 
-    def refmac_windows_input_file(self, nextCycle, mtz_free, ligand_cif, project_data, xtal):
+    def prepare_refmac_windows_script(self, nextCycle, mtz_free, ligand_cif, project_data, xtal):
         os.chdir(os.path.join(project_data, xtal, "scripts"))
 
         params = (
@@ -314,49 +314,121 @@ class command_line_scripts(object):
         "copy Refine_{0!s}\rrefine.mtz .\n".format(nextCycle) +
         "del refinement_in_progress"
         )
+
+        print('writing refmac_{0!s}.sh in {1!s}'.format(nextCycle, os.path.join(project_data, xtal, "scripts")))
         f = open('refmac_{0!s}.bat'.format(nextCycle), 'w')
         f.write(cmd)
         f.close()
 
-    def giant_quick_refine_refmac(self):
+
+    def prepare_refmac_unix_script(self, nextCycle, mtz_free, ligand_cif, project_data, xtal):
+        os.chdir(os.path.join(project_data, xtal, "scripts"))
+
+        libin = ''
+        if ligand_cif:
+            libin = "libin " + ligand_cif
+
+        cmd = (
+            '#!'+os.getenv('SHELL')+'\n'
+            'refmac5 '
+            ' hklin ../{0!s} hklout ../Refine_{1!s}/refine.mtz'.format(mtz_free, nextCycle) +
+            ' xyzin ../aved_models/input_model_for_cycle_{0!s} xyzout ../Refine_{1!s}/refine.pdb '.format(nextCycle, nextCycle) +
+            libin +
+            ' << EOF > refmac.log\n'
+            'make -\n'
+            '    hydrogen ALL -\n'
+            '    hout NO -\n'
+            '    peptide NO -\n'
+            '    cispeptide YES -\n'
+            '    ssbridge YES -\n'
+            '    symmetry YES -\n'
+            '    sugar YES -\n'
+            '    connectivity NO -\n'
+            '    link NO\n'
+            'refi -\n'
+            '    type REST -\n'
+            '    resi MLKF -\n'
+            '    meth CGMAT -\n'
+            'scal -\n'
+            '    type SIMP -\n'
+            '    LSSC -\n'
+            '    ANISO -\n'
+            '    EXPE\n'
+            'solvent YES\n'
+            'monitor MEDIUM -\n'
+            '    torsion 10.0 -\n'
+            '    distance 10.0 -\n'
+            '    angle 10.0 -\n'
+            '    plane 10.0 -\n'
+            '    chiral 10.0 -\n'
+            '    bfactor 10.0 -\n'
+            '    bsphere 10.0 -\n'
+            '    rbond 10.0 -\n'
+            '    ncsr 10.0\n'
+            'labin  FP=F SIGFP=SIGF FREE=FreeR_flag\n'
+            'labout  FC=FC FWT=FWT PHIC=PHIC PHWT=PHWT DELFWT=DELFWT PHDELWT=PHDELWT FOM=FOM\n'
+            'DNAME '+self.xtalID+'\n'
+            'END\n'
+            'EOF\n\n'
+            'cd {0!s}/{1!s} \n\n'.format(project_data, xtal) +
+            'ln -s ./Refine_{0!s}/refine.pdb .\n'.format(nextCycle) +
+            'ln -s ./Refine_{0!s}/refine.mtz .\n'.format(nextCycle) +
+            'ln -s ./Refine_{0!s}/refine.mmcif .\n'.format(nextCycle)
+        )
+
+        print('writing refmac_{0!s}.sh in {1!s}'.format(nextCycle, os.path.join(project_data, xtal, "scripts")))
+        f = open('refmac_{0!s}.sh'.format(nextCycle), 'w')
+        f.write(cmd)
+        f.close()
+
+
+
+    def prepare_giant_quick_refine_script(self):
         cmd = "giant.quick_refine input.pdb=MID2-x0054-ensemble-model.pdb mtz=free.mtz cif=VT00188.cif params=multi-state-restraints.refmac.params"
 
-    def coot_refmac(self):
-        pdb_in_filename = "/Users/tobkro/tmp/init.pdb"
-        pdb_out_filename = "/Users/tobkro/tmp/Refine_4/refine.pdb"
-        mtz_in_filename = "/Users/tobkro/tmp/AUTOMATIC_DEFAULT_free.mtz"
-        mtz_out_filename = "/Users/tobkro/tmp/Refine_4/refine.mtz"
-        extra_cif_lib_filename = ""
-        imol_refmac_count = 0
-        swap_map_colours_post_refmac = 0
-        imol_mtz_molecule = 0
-        show_diff_map_flag = 0
-        phase_combine_flag = 0
-        phib_fom_pair = "dummy"
-        force_n_cycles = 5
-        make_molecules_flag = 0
-        ccp4i_project_dir = ""
-        f_col = ""
-        sig_f_col = ""
-        r_free_col = ""
 
-        __main__.run_refmac_by_filename(pdb_in_filename,
-                                        pdb_out_filename,
-                                        mtz_in_filename,
-                                        mtz_out_filename,
-                                        extra_cif_lib_filename,
-                                        imol_refmac_count,
-                                        swap_map_colours_post_refmac,
-                                        imol_mtz_molecule,
-                                        show_diff_map_flag,
-                                        phase_combine_flag,
-                                        phib_fom_pair,
-                                        force_n_cycles,
-                                        make_molecules_flag,
-                                        ccp4i_project_dir,
-                                        f_col,
-                                        sig_f_col,
-                                        r_free_col)
+    def run_refmac_unix_script(self, nextCycle, project_data, xtal):
+        os.chdir(os.path.join(project_data, xtal, "scripts"))
+        os.system('chmod +x refmac_{0!s}.sh'.format(nextCycle))
+        os.system('./refmac_{0!s}.sh &'.format(nextCycle))
+
+
+#    def coot_refmac(self):
+#        pdb_in_filename = "/Users/tobkro/tmp/init.pdb"
+#        pdb_out_filename = "/Users/tobkro/tmp/Refine_4/refine.pdb"
+#        mtz_in_filename = "/Users/tobkro/tmp/AUTOMATIC_DEFAULT_free.mtz"
+#        mtz_out_filename = "/Users/tobkro/tmp/Refine_4/refine.mtz"
+#        extra_cif_lib_filename = ""
+#        imol_refmac_count = 0
+#        swap_map_colours_post_refmac = 0
+#        imol_mtz_molecule = 0
+#        show_diff_map_flag = 0
+#        phase_combine_flag = 0
+#        phib_fom_pair = "dummy"
+#        force_n_cycles = 5
+#        make_molecules_flag = 0
+#        ccp4i_project_dir = ""
+#        f_col = ""
+#        sig_f_col = ""
+#        r_free_col = ""
+#
+#        __main__.run_refmac_by_filename(pdb_in_filename,
+#                                        pdb_out_filename,
+#                                        mtz_in_filename,
+#                                        mtz_out_filename,
+#                                        extra_cif_lib_filename,
+#                                        imol_refmac_count,
+#                                        swap_map_colours_post_refmac,
+#                                        imol_mtz_molecule,
+#                                        show_diff_map_flag,
+#                                        phase_combine_flag,
+#                                        phib_fom_pair,
+#                                        force_n_cycles,
+#                                        make_molecules_flag,
+#                                        ccp4i_project_dir,
+#                                        f_col,
+#                                        sig_f_col,
+#                                        r_free_col)
 
 class main_window(object):
     """ main window of the plugin
@@ -822,9 +894,11 @@ class main_window(object):
         print('hallo')
 
     def prepare_refinement_batch_script(self, nextCycle):
-        print('hallo')
+        print('preparing refinement script...')
         if os.name == 'nt':
-            command_line_scripts.refmac_windows_input_file(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
+            command_line_scripts.prepare_refmac_windows_script(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
+        else:
+            command_line_scripts.prepare_refmac_unix_script(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
 
     def remove_files_from_previous_cycle(self):
         os.remove('refine.pdb')
@@ -832,6 +906,10 @@ class main_window(object):
 
     def run_refinement_batch_script(self, nextCycle):
         print("hallo")
+        if os.name == 'nt':
+            print('does not work; patience...')
+        else:
+            command_line_scripts.run_refmac_unix_script(nextCycle, self.project_data, self.xtal)
 
     def refine(self, widget):
         self.create_saved_models_folder_if_not_exists()
