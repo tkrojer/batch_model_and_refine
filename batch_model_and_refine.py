@@ -748,7 +748,8 @@ class main_window(object):
             if newSample:
                 datasetDict = dataset_information()
                 datasetDict['sample_ID'] = sample_ID
-            datasetDict['pdb'] = repr(pdbFile)
+#            datasetDict['pdb'] = repr(pdbFile)
+            datasetDict['pdb'] = pdbFile
             print('pdb', datasetDict['pdb'])
             print('repr(pdb)', repr(datasetDict['pdb']))
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
