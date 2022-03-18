@@ -196,7 +196,7 @@ def prepare_init_refine_script(projectDir, sample, pdb, refine_pipeline):
 def submit_init_refine_script(projectDir, sample, refine_pipeline):
     os.chdir(os.path.join(projectDir, sample))
     print('submitting {0!s} job for {1!s}'.format(refine_pipeline, sample))
-    print('sbatch {0!s}.sh'.format(refine_pipeline))
+    os.system('sbatch {0!s}.sh'.format(refine_pipeline))
 
 
 def run_initial_refinement(processDir, projectDir, pdbDir, process_pipeline, refine_pipeline, analyseOnly):
