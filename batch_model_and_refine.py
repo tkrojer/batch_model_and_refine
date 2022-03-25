@@ -838,6 +838,8 @@ class main_window(object):
  #       self.update_labels()
 
         coot.set_nomenclature_errors_on_read("ignore")
+        print('self.pdb {0!s}'.format(self.pdb))
+        print('realpath(self.pdb {0!s})'.format(os.path.realpath(self.pdb)))
         imol = coot.handle_read_draw_molecule_with_recentre(self.pdb, 0)
         self.mol_dict['pdb'] = imol
         imol = coot.auto_read_make_and_draw_maps(self.mtz)
