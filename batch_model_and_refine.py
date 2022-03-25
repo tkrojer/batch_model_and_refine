@@ -257,6 +257,10 @@ class pdbtools(object):
         resolution_high = ''
 #        for line in open(self.pdb):
         print('--> self.pdb', self.pdb)
+        if os.path.isfile(self.pdb):
+            print('still all good')
+        else:
+            print('nooooooooooo')
         for line in open(self.pdb):
             if line.startswith('REMARK   3   RESOLUTION RANGE HIGH (ANGSTROMS) :'):
                 resolution_high = line.split()[7]
