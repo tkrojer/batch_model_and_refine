@@ -221,8 +221,9 @@ class pdbtools(object):
         Note: class should be replaced by GEMMI once it is available in WinCOOT
     """
 
-    def __init__(self, pdb):
+    def __init__(self, pdb, l):
         self.pdb = pdb
+        self.l = l
         print('here')
         if os.path.isfile(self.pdb):
             print('all good')
@@ -261,7 +262,9 @@ class pdbtools(object):
             print('still all good')
         else:
             print('nooooooooooo')
-        for line in open(self.pdb):
+        print('list', self.l)
+#        for line in open(self.pdb):
+        for line in open(os.sep.join(self.l)):
             if line.startswith('REMARK   3   RESOLUTION RANGE HIGH (ANGSTROMS) :'):
                 resolution_high = line.split()[7]
                 break
@@ -781,7 +784,8 @@ class main_window(object):
         self.index_total_label.set_label(str(len(self.project_data['datasets'])))
 
     def update_labels(self):
-        pdb = pdbtools(self.pdb)
+#        pdb = pdbtools(self.pdb)
+        pdb = pdbtools(self.pdb, self.project_data['datasets'][self.index]['pdb'])
         self.xtal_label.set_label(self.xtal)
         self.resolution_label.set_label(pdb.resolution_high())
         self.r_free_label.set_label(pdb.r_free())
