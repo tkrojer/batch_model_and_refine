@@ -791,6 +791,10 @@ class main_window(object):
         print('#####>>>> {0!s}'.format(self.project_data['datasets'][self.index]['pdb']))
         self.pdb = os.sep.join(self.project_data['datasets'][self.index]['pdb'])
         print('join >>>> {0!s}'.format(self.pdb))
+        if os.path.isfile(self.pdb):
+            print('found it')
+        else:
+            print('on')
         self.mtz = os.sep.join(self.project_data['datasets'][self.index]['mtz'])
         self.ligand_cif = os.sep.join(self.project_data['datasets'][self.index]['ligand_cif'])
 
