@@ -223,6 +223,11 @@ class pdbtools(object):
 
     def __init__(self, pdb):
         self.pdb = pdb
+        print('here')
+        if os.path.isfile(self.pdb):
+            print('all good')
+        else:
+            print('bummer')
 
     def spacegroup(self):
         spacegroup = ''
