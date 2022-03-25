@@ -735,8 +735,6 @@ class main_window(object):
 #                sample_ID = pdbFile.split('/')[len(self.projectDir.split('/'))]
 ##                sample_ID = pdbFile.split('/')[len(pdbFile.split('/'))]
             sample_ID = pdbFile.split(os.sep)[len(self.projectDir.split(os.sep))]
-
-
             print('checking folder: {0!s}'.format(sample_ID))
             newSample = True
             for d in self.project_data['datasets']:
@@ -749,24 +747,24 @@ class main_window(object):
                 datasetDict = dataset_information()
                 datasetDict['sample_ID'] = sample_ID
 #            datasetDict['pdb'] = repr(pdbFile)
-            datasetDict['pdb'] = pdbFile
-            print('pdb', datasetDict['pdb'])
-            print('repr(pdb)', repr(datasetDict['pdb']))
+            datasetDict['pdb'] = pdbFile.split(os.sep)
+#            print('pdb', datasetDict['pdb'])
+#            print('repr(pdb)', repr(datasetDict['pdb']))
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
-                datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName)
+                datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName).split(os.sep)
             foundCIF = False
 #            print("cifNamr", cifName)
 #            print("glob",os.path.join(self.projectDir, sample_ID, cifName))
             for cifFile in glob.glob(os.path.join(self.projectDir, sample_ID, cifName)):
                 if os.path.isfile(cifFile.replace('.cif', '.pdb')):
-                    datasetDict['ligand_cif'] = cifFile
+                    datasetDict['ligand_cif'] = cifFile.split(os.sep)
                     print("found ligand cif and corresponding pdb file: {0!s}".format(cifFile))
                     foundCIF = True
                     break
             if not foundCIF:
                 print('WARNING: did not find ligand cif file for {0!s}'.format(sample_ID))
             self.project_data['datasets'].append((datasetDict))
-            print('datasetDict', datasetDict)
+#            print('datasetDict', datasetDict)
             n += 1
             self.crystal_progressbar.set_fraction(float(n)/float(n_folders))
         self.crystal_progressbar.set_fraction(0)
@@ -781,17 +779,18 @@ class main_window(object):
         self.r_work_label.set_label(pdb.r_work())
         self.space_group_label.set_label(pdb.spacegroup())
         print('ligand_cif', self.ligand_cif)
-        if os.name == 'nt':
-            cif = self.ligand_cif.split('\\')[len(self.ligand_cif.split('\\'))-1].replace('.cif', '')
-        else:
-            cif = self.ligand_cif.split('/')[len(self.ligand_cif.split('/')) - 1].replace('.cif', '')
+#        if os.name == 'nt':
+#            cif = self.ligand_cif.split('\\')[len(self.ligand_cif.split('\\'))-1].replace('.cif', '')
+#        else:
+#            cif = self.ligand_cif.split('/')[len(self.ligand_cif.split('/')) - 1].replace('.cif', '')
+        cif = self.ligand_cif.split(os.sep)[len(self.ligand_cif.split(os.sep))-1].replace('.cif', '')
         self.ligand_cif_label.set_label(cif)
 
     def update_params(self):
         self.xtal = self.project_data['datasets'][self.index]['sample_ID']
-        self.pdb = self.project_data['datasets'][self.index]['pdb']
-        self.mtz = self.project_data['datasets'][self.index]['mtz']
-        self.ligand_cif = self.project_data['datasets'][self.index]['ligand_cif']
+        self.pdb = os.sep.join(self.project_data['datasets'][self.index]['pdb'])
+        self.mtz = os.sep.join(self.project_data['datasets'][self.index]['mtz'])
+        self.ligand_cif = os.sep.join(self.project_data['datasets'][self.index]['ligand_cif'])
 
     def RefreshData(self):
 
