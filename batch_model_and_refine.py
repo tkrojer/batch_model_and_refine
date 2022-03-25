@@ -788,7 +788,9 @@ class main_window(object):
 
     def update_params(self):
         self.xtal = self.project_data['datasets'][self.index]['sample_ID']
+        print('#####>>>> {0!s}'.format(self.project_data['datasets'][self.index]['pdb']))
         self.pdb = os.sep.join(self.project_data['datasets'][self.index]['pdb'])
+        print('join >>>> {0!s}'.format(self.pdb))
         self.mtz = os.sep.join(self.project_data['datasets'][self.index]['mtz'])
         self.ligand_cif = os.sep.join(self.project_data['datasets'][self.index]['ligand_cif'])
 
