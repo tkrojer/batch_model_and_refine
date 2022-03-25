@@ -835,7 +835,7 @@ class main_window(object):
 
         self.update_params()
 
-        self.update_labels()
+ #       self.update_labels()
 
         coot.set_nomenclature_errors_on_read("ignore")
         imol = coot.handle_read_draw_molecule_with_recentre(self.pdb, 0)
