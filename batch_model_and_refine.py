@@ -840,6 +840,12 @@ class main_window(object):
         coot.set_nomenclature_errors_on_read("ignore")
         print('self.pdb {0!s}'.format(self.pdb))
         print('realpath(self.pdb {0!s})'.format(os.path.realpath(self.pdb)))
+        if os.path.islink(self.pdb):
+            print('this is a link')
+        else:
+            print('not sure what it is')
+        x = os.readlink(self.pdb)
+        print('x {0!s}'.format(x))
         imol = coot.handle_read_draw_molecule_with_recentre(self.pdb, 0)
         self.mol_dict['pdb'] = imol
         imol = coot.auto_read_make_and_draw_maps(self.mtz)
