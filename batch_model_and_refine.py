@@ -292,10 +292,11 @@ class command_line_scripts(object):
     def __init__(self):
         print("hallo")
 
-    def create_refinement_in_progress_file(self):
-        f = open('refinement_in_progress', 'w')
-        f.write('')
-        f.close()
+#    def create_refinement_in_progress_file(self, projectDir, xtal):
+#        os.chdir(os.path.join(projectDir, xtal))
+#        f = open('refinement_in_progress', 'w')
+#        f.write('')
+#        f.close()
 
 
     def prepare_refmac_windows_script(self, nextCycle, mtz_free, ligand_cif, project_data, xtal):
@@ -344,7 +345,7 @@ class command_line_scripts(object):
             '#!'+os.getenv('SHELL')+'\n'
             'refmac5 '
             ' hklin ../{0!s} hklout ../Refine_{1!s}/refine.mtz'.format(mtz_free, nextCycle) +
-            ' xyzin ../aved_models/input_model_for_cycle_{0!s} xyzout ../Refine_{1!s}/refine.pdb '.format(nextCycle, nextCycle) +
+            ' xyzin ../saved_models/input_model_for_cycle_{0!s}.pdb xyzout ../Refine_{1!s}/refine.pdb '.format(nextCycle, nextCycle) +
             libin +
             ' << EOF > refmac.log\n'
             'make -\n'
@@ -393,6 +394,37 @@ class command_line_scripts(object):
         f.write(cmd)
         f.close()
 
+
+    def prepare_buster_maxiv_script(self, nextCycle, ligand_cif, projectDir, xtal):
+        cif_name = ligand_cif.split('/')[len(ligand_cif.split('/'))-1]
+        os.chdir(os.path.join(projectDir, xtal, "scripts"))
+        cmd = (
+            '#!/bin/bash\n'
+            '#SBATCH --time=10:00:00\n'
+            '#SBATCH --job-name=buster\n'
+            '#SBATCH --cpus-per-task=1\n'
+            'module load gopresto BUSTER\n'
+            'cd {0!s}\n'.format(os.path.join(projectDir, xtal).replace('/Volumes/offline-staff', '/data/staff')) +
+            'touch refinement_in_progress\n'
+            'refine' 
+            ' -p saved_models/input_model_for_cycle_{0!s}.pdb'.format(nextCycle) +
+            ' -m free.mtz'
+            ' -d Refine_{0!s}'.format(nextCycle) +
+            ' -l compound/{0!s}\n'.format(cif_name) +
+            'ln -s ./Refine_{0!s}/refine.pdb .\n'.format(nextCycle) +
+            'ln -s ./Refine_{0!s}/refine.mtz .\n'.format(nextCycle) +
+            'ln -s ./Refine_{0!s}/BUSTER_model.cif refine.cif\n'.format(nextCycle) +
+            '/bin/rm refinement_in_progress\n'
+
+        )
+        print('writing buster_{0!s}.sh in {1!s}'.format(nextCycle, os.path.join(projectDir, xtal, "scripts")))
+        f = open('buster_{0!s}.sh'.format(nextCycle), 'w')
+        f.write(cmd)
+        f.close()
+
+        print('submitting job...')
+        print('ssh offline-fe1 "cd {0!s}; sbatch buster_{1!s}.sh"'.format(os.path.join(projectDir, xtal, "scripts").replace('/Volumes/offline-staff', '/data/staff'), nextCycle))
+        os.system('ssh offline-fe1 "cd {0!s}; sbatch buster_{1!s}.sh"'.format(os.path.join(projectDir, xtal, "scripts").replace('/Volumes/offline-staff', '/data/staff'), nextCycle))
 
 
     def prepare_giant_quick_refine_script(self):
@@ -497,7 +529,7 @@ class main_window(object):
         frame.add(hbox)
         self.vbox.pack_start(frame)
 
-        self.vbox.add(gtk.Label("\n"))
+#        self.vbox.add(gtk.Label("\n"))
 
         frame = gtk.Frame(label='Datasets')
         vbox = gtk.VBox()
@@ -560,7 +592,7 @@ class main_window(object):
         hbox.add(outer_frame)
         self.vbox.add(hbox)
 
-        self.vbox.add(gtk.Label("\n"))
+#        self.vbox.add(gtk.Label("\n"))
 
         frame = gtk.Frame(label='Navigator')
         vbox = gtk.VBox()
@@ -628,7 +660,7 @@ class main_window(object):
         hbox.add(outer_frame)
         self.vbox.add(hbox)
 
-        self.vbox.add(gtk.Label("\n"))
+#        self.vbox.add(gtk.Label("\n"))
 
         frame = gtk.Frame(label='Tags')
         vbox = gtk.VBox()
@@ -646,7 +678,7 @@ class main_window(object):
         frame.add(vbox)
         self.vbox.add(frame)
 
-        self.vbox.add(gtk.Label("\n"))
+#        self.vbox.add(gtk.Label("\n"))
 
         frame = gtk.Frame(label='Ligand Modeling')
         hbox = gtk.HBox()
@@ -661,7 +693,7 @@ class main_window(object):
         frame.add(hbox)
         self.vbox.pack_start(frame)
 
-        self.vbox.add(gtk.Label("\n"))
+#        self.vbox.add(gtk.Label("\n"))
 
         frame = gtk.Frame(label='Save')
         hbox = gtk.HBox()
@@ -682,7 +714,7 @@ class main_window(object):
         vbox.add(refinement_parameters_button)
         refine_button = gtk.Button(label="Refine")
         refine_button.connect("clicked", self.refine)
-        refine_button.set_sensitive(False)
+#        refine_button.set_sensitive(False)
         vbox.add(refine_button)
         frame.add(vbox)
         self.vbox.pack_start(frame)
@@ -835,26 +867,29 @@ class main_window(object):
 
         self.update_params()
 
- #       self.update_labels()
+        self.update_labels()
 
         coot.set_nomenclature_errors_on_read("ignore")
-        print('self.pdb {0!s}'.format(self.pdb))
-        print('realpath(self.pdb {0!s})'.format(os.path.realpath(self.pdb)))
-        if os.path.islink(self.pdb):
-            print('this is a link')
-        else:
-            print('not sure what it is')
-        x = os.readlink(self.pdb)
-        print('x {0!s}'.format(x))
+#        print('self.pdb {0!s}'.format(self.pdb))
+#        print('realpath(self.pdb {0!s})'.format(os.path.realpath(self.pdb)))
+#        if os.path.islink(self.pdb):
+#            print('this is a link')
+#        else:
+#            print('not sure what it is')
+#        x = os.readlink(self.pdb)
+#        print('x {0!s}'.format(x))
         imol = coot.handle_read_draw_molecule_with_recentre(self.pdb, 0)
         self.mol_dict['pdb'] = imol
         imol = coot.auto_read_make_and_draw_maps(self.mtz)
         self.mol_dict['mtz'] = imol
 
         if os.path.isfile(self.ligand_cif.replace('.cif', '.pdb')):
+            coot.read_cif_dictionary(self.ligand_cif)
             imol = coot.handle_read_draw_molecule_with_recentre(self.ligand_cif.replace('.cif', '.pdb'), 0)
             self.mol_dict['ligand_cif'] = imol
-            coot.read_cif_dictionary(self.ligand_cif)
+            coot.seqnum_from_serial_number(imol, "X", 0)
+            coot.set_b_factor_residue_range(imol, "X", 1, 1, 20.00)
+
 
         coot.set_colour_map_rotation_on_read_pdb(0)
         coot.set_colour_map_rotation_for_map(0)
@@ -922,14 +957,20 @@ class main_window(object):
 
     def prepare_refinement_batch_script(self, nextCycle):
         print('preparing refinement script...')
-        if os.name == 'nt':
-            command_line_scripts.prepare_refmac_windows_script(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
-        else:
-            command_line_scripts.prepare_refmac_unix_script(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
+#        if os.name == 'nt':
+#            command_line_scripts.prepare_refmac_windows_script(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
+#        else:
+#            command_line_scripts.prepare_refmac_unix_script(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
+        command_line_scripts().prepare_buster_maxiv_script(nextCycle, self.ligand_cif, self.projectDir, self.xtal)
 
     def remove_files_from_previous_cycle(self):
-        os.remove('refine.pdb')
-        os.remove('refine.mtz')
+        os.chdir(os.path.join(self.projectDir, self.xtal))
+        if os.path.isfile('refine.pdb'):
+            os.remove('refine.pdb')
+        if os.path.isfile('refine.mtz'):
+            os.remove('refine.mtz')
+        if os.path.isfile('refine.cif'):
+            os.remove('refine.cif')
 
     def run_refinement_batch_script(self, nextCycle):
         print("hallo")
@@ -942,10 +983,14 @@ class main_window(object):
         self.create_saved_models_folder_if_not_exists()
         self.create_scripts_folder_if_not_exists()
 
-        if not os.path.isfile('refinement_in_progress'):
-            command_line_scripts.create_refinement_in_progress_file()
-        else:
-            print('ERROR: refinement in progress; please try again later')
+#        if not os.path.isfile('refinement_in_progress'):
+#            command_line_scripts().create_refinement_in_progress_file(self.projectDir, self.xtal)
+#        else:
+#            print('ERROR: refinement in progress; please try again later')
+
+#        if os.path.isfile('refinement_in_progress'):
+#            print('ERROR: refinement in progress; please try again later')
+#            return None
 
         self.remove_files_from_previous_cycle()
         nextCycle = self.get_next_refinement_cycle()
@@ -954,7 +999,7 @@ class main_window(object):
 
         self.prepare_refinement_batch_script(nextCycle)
 
-        self.run_refinement_batch_script(nextCycle)
+#        self.run_refinement_batch_script(nextCycle)
 
 if __name__ == '__main__':
     main_window().start_gui()
