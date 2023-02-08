@@ -396,7 +396,8 @@ class command_line_scripts(object):
 
 
     def prepare_buster_maxiv_script(self, nextCycle, ligand_cif, projectDir, xtal):
-        cif_name = ligand_cif.split('/')[len(ligand_cif.split('/'))-1]
+#        cif_name = ligand_cif.split('/')[len(ligand_cif.split('/'))-1]
+        cif_name = "." + ligand_cif.replace(os.path.join(projectDir, xtal), '')
         os.chdir(os.path.join(projectDir, xtal, "scripts"))
         cmd = (
             '#!/bin/bash\n'
@@ -410,7 +411,7 @@ class command_line_scripts(object):
             ' -p saved_models/input_model_for_cycle_{0!s}.pdb'.format(nextCycle) +
             ' -m free.mtz'
             ' -d Refine_{0!s}'.format(nextCycle) +
-            ' -l compound/{0!s}\n'.format(cif_name) +
+            ' -l {0!s}\n'.format(cif_name) +
             'ln -s ./Refine_{0!s}/refine.pdb .\n'.format(nextCycle) +
             'ln -s ./Refine_{0!s}/refine.mtz .\n'.format(nextCycle) +
             'ln -s ./Refine_{0!s}/BUSTER_model.cif refine.cif\n'.format(nextCycle) +
@@ -884,6 +885,8 @@ class main_window(object):
         self.mol_dict['mtz'] = imol
 
         if os.path.isfile(self.ligand_cif.replace('.cif', '.pdb')):
+#            print('HHH', self.ligand_cif)
+#            print('ggg', self.ligand_cif.replace(os.path.join(self.projectDir, self.xtal), ''))
             coot.read_cif_dictionary(self.ligand_cif)
             imol = coot.handle_read_draw_molecule_with_recentre(self.ligand_cif.replace('.cif', '.pdb'), 0)
             self.mol_dict['ligand_cif'] = imol
