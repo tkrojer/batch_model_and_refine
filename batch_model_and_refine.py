@@ -49,7 +49,7 @@ def project_data():
             'pdb':                  'init.pdb',
             'mtz':                  'init.mtz',
             'mtz_free':             'free.mtz',
-            'ligand_cif':           'compound/*.cif'
+            'ligand_cif':           'ligand_files/*.cif'
             },
         'datasets': []
     }
