@@ -36,7 +36,7 @@ def defaults():
         'pdb':  'init.pdb',
         'mtz': 'init.pdb',
         'mtz_free': 'free.mtz',
-        'ligand_cif': 'compound/*.cif',
+        'ligand_cif': 'ligand_files/*.cif',
         'windows_refmac_path': 'C:\\'
     }
     return defaults
