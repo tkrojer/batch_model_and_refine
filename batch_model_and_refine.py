@@ -768,11 +768,14 @@ class main_window(object):
             datasetDict['pdb'] = pdbFile.split(os.sep)
 #            print('pdb', datasetDict['pdb'])
 #            print('repr(pdb)', repr(datasetDict['pdb']))
-            if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
-                print('INFO: found mtz file: {0!s}'.format(pdbFile.replace(pdbName, mtzName)))
-                datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName).split(os.sep)
-            else:
-                print('ERROR: cannot find mtz file: {0!s}'.format(pdbFile.replace(pdbName, mtzName)))
+            for mtzFile in sorted(glob.glob(os.path.join(self.projectDir, globString, mtzName))):
+                print('INFO: found mtz file: {0!s}'.format(mtzFile))
+                datasetDict['mtz'] = mtzFile
+#            if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
+#                print('INFO: found mtz file: {0!s}'.format(pdbFile.replace(pdbName, mtzName)))
+#                datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName).split(os.sep)
+#            else:
+#                print('ERROR: cannot find mtz file: {0!s}'.format(pdbFile.replace(pdbName, mtzName)))
             foundCIF = False
 #            print("cifNamr", cifName)
 #            print("glob",os.path.join(self.projectDir, sample_ID, cifName))
