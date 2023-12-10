@@ -30,16 +30,18 @@ import time
 
 import json
 
+
 def defaults():
     defaults = {
-        'glob_string':    '*',
-        'pdb':  'init.pdb',
-        'mtz': 'init.pdb',
-        'mtz_free': 'free.mtz',
-        'ligand_cif': 'ligand_files/*.cif',
+        'glob_string':          '*',
+        'pdb':                  'init.pdb',
+        'mtz':                  'init.pdb',
+        'mtz_free':             'free.mtz',
+        'ligand_cif':           'ligand_files/*.cif',
         'windows_refmac_path': 'C:\\'
     }
     return defaults
+
 
 def project_data():
     project_information = {
@@ -54,6 +56,7 @@ def project_data():
         'datasets': []
     }
     return project_information
+
 
 def dataset_information():
     # append datasets list
@@ -70,6 +73,7 @@ def dataset_information():
     }
     return dataset
 
+
 def status_categories():
     status_categories = [
         '-1 - Analysed & Rejected'
@@ -79,6 +83,7 @@ def status_categories():
         '3 - Deposition ready'
     ]
     return status_categories
+
 
 def refmac_refinement_params():
     refmac_refinement_params = {
@@ -91,6 +96,7 @@ def refmac_refinement_params():
         'TWIN':             ''
     }
     return refmac_refinement_params
+
 
 def buster_refinement_params():
     buster_refinement_params = {
@@ -340,12 +346,16 @@ class command_line_scripts(object):
         libin = ''
         if ligand_cif:
             libin = "libin " + ligand_cif
+        else:
+            libin = ''
 
         cmd = (
             '#!'+os.getenv('SHELL')+'\n'
             'refmac5 '
-            ' hklin ../{0!s} hklout ../Refine_{1!s}/refine.mtz'.format(mtz_free, nextCycle) +
-            ' xyzin ../saved_models/input_model_for_cycle_{0!s}.pdb xyzout ../Refine_{1!s}/refine.pdb '.format(nextCycle, nextCycle) +
+            ' hklin ../{0!s}'.format(mtz_free) +
+            ' hklout ../Refine_{0!s}/refine.mtz'.format(nextCycle) +
+            ' xyzin ../saved_models/input_model_for_cycle_{0!s}.pdb '.format(nextCycle) +
+            ' xyzout ../Refine_{0!s}/refine.pdb '.format(nextCycle) +
             libin +
             ' << EOF > refmac.log\n'
             'make -\n'
@@ -428,8 +438,8 @@ class command_line_scripts(object):
         os.system('ssh offline-fe1 "cd {0!s}; sbatch buster_{1!s}.sh"'.format(os.path.join(projectDir, xtal, "scripts").replace('/Volumes/offline-staff', '/data/staff'), nextCycle))
 
 
-    def prepare_giant_quick_refine_script(self):
-        cmd = "giant.quick_refine input.pdb=MID2-x0054-ensemble-model.pdb mtz=free.mtz cif=VT00188.cif params=multi-state-restraints.refmac.params"
+#    def prepare_giant_quick_refine_script(self):
+#        cmd = "giant.quick_refine input.pdb=MID2-x0054-ensemble-model.pdb mtz=free.mtz cif=VT00188.cif params=multi-state-restraints.refmac.params"
 
 
     def run_refmac_unix_script(self, nextCycle, project_data, xtal):
@@ -437,43 +447,6 @@ class command_line_scripts(object):
         os.system('chmod +x refmac_{0!s}.sh'.format(nextCycle))
         os.system('./refmac_{0!s}.sh &'.format(nextCycle))
 
-
-#    def coot_refmac(self):
-#        pdb_in_filename = "/Users/tobkro/tmp/init.pdb"
-#        pdb_out_filename = "/Users/tobkro/tmp/Refine_4/refine.pdb"
-#        mtz_in_filename = "/Users/tobkro/tmp/AUTOMATIC_DEFAULT_free.mtz"
-#        mtz_out_filename = "/Users/tobkro/tmp/Refine_4/refine.mtz"
-#        extra_cif_lib_filename = ""
-#        imol_refmac_count = 0
-#        swap_map_colours_post_refmac = 0
-#        imol_mtz_molecule = 0
-#        show_diff_map_flag = 0
-#        phase_combine_flag = 0
-#        phib_fom_pair = "dummy"
-#        force_n_cycles = 5
-#        make_molecules_flag = 0
-#        ccp4i_project_dir = ""
-#        f_col = ""
-#        sig_f_col = ""
-#        r_free_col = ""
-#
-#        __main__.run_refmac_by_filename(pdb_in_filename,
-#                                        pdb_out_filename,
-#                                        mtz_in_filename,
-#                                        mtz_out_filename,
-#                                        extra_cif_lib_filename,
-#                                        imol_refmac_count,
-#                                        swap_map_colours_post_refmac,
-#                                        imol_mtz_molecule,
-#                                        show_diff_map_flag,
-#                                        phase_combine_flag,
-#                                        phib_fom_pair,
-#                                        force_n_cycles,
-#                                        make_molecules_flag,
-#                                        ccp4i_project_dir,
-#                                        f_col,
-#                                        sig_f_col,
-#                                        r_free_col)
 
 class main_window(object):
     """ main window of the plugin
@@ -796,7 +769,10 @@ class main_window(object):
 #            print('pdb', datasetDict['pdb'])
 #            print('repr(pdb)', repr(datasetDict['pdb']))
             if os.path.isfile(pdbFile.replace(pdbName, mtzName)):
+                print('INFO: found mtz file: {0!s}'.format(pdbFile.replace(pdbName, mtzName)))
                 datasetDict['mtz'] = pdbFile.replace(pdbName, mtzName).split(os.sep)
+            else:
+                print('ERROR: cannot find mtz file: {0!s}'.format(pdbFile.replace(pdbName, mtzName)))
             foundCIF = False
 #            print("cifNamr", cifName)
 #            print("glob",os.path.join(self.projectDir, sample_ID, cifName))
