@@ -791,6 +791,9 @@ class main_window(object):
 #            print('datasetDict', datasetDict)
             n += 1
             self.crystal_progressbar.set_fraction(float(n)/float(n_folders))
+        print('INFO: PDB, MTZ, CIF file in project_data:')
+        print(self.project_data)
+        print('INFO: done...')
         self.crystal_progressbar.set_fraction(0)
         self.index_label.set_label(str(self.index))
         self.index_total_label.set_label(str(len(self.project_data['datasets'])))
