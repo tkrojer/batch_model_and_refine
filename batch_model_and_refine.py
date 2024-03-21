@@ -34,8 +34,8 @@ import json
 def defaults():
     defaults = {
         'glob_string':          '*',
-        'pdb':                  'init.pdb',
-        'mtz':                  'init.pdb',
+        'pdb':                  'refine.pdb',
+        'mtz':                  'refine.pdb',
         'mtz_free':             'free.mtz',
         'ligand_cif':           'ligand_files/*.cif',
         'windows_refmac_path': 'C:\\'
@@ -48,8 +48,8 @@ def project_data():
         'settings': {
             'project_directory':    '',
             'glob_string':          '*',
-            'pdb':                  'init.pdb',
-            'mtz':                  'init.mtz',
+            'pdb':                  'refine.pdb',
+            'mtz':                  'refine.mtz',
             'mtz_free':             'free.mtz',
             'ligand_cif':           'ligand_files/*.cif'
             },
@@ -440,6 +440,42 @@ class command_line_scripts(object):
 
 #    def prepare_giant_quick_refine_script(self):
 #        cmd = "giant.quick_refine input.pdb=MID2-x0054-ensemble-model.pdb mtz=free.mtz cif=VT00188.cif params=multi-state-restraints.refmac.params"
+
+    def prepare_phenix_maxiv_script(self, nextCycle, ligand_cif, projectDir, xtal):
+        cif_name = "." + ligand_cif.replace(os.path.join(projectDir, xtal), '')
+        if not os.path.isdir(os.path.join(projectDir, xtal, "Refine_{0!s}".format(nextCycle))):
+            os.mkdir(os.path.join(projectDir, xtal, "Refine_{0!s}".format(nextCycle)))
+        os.chdir(os.path.join(projectDir, xtal, "scripts"))
+        cmd = (
+            '#!/bin/bash\n'
+            '#SBATCH --time=10:00:00\n'
+            '#SBATCH --job-name=phenix.refine\n'
+            'source /data/staff/biomax/tobias/software/phenix-1.20.1-4487/phenix_env.sh\n'
+            'cd {0!s}\n'.format(os.path.join(projectDir, xtal).replace('/Volumes/offline-staff', '/data/staff')) +
+            'touch refinement_in_progress\n'
+            'cd Refine_{0!s}\n'.format(nextCycle) +
+            'phenix.refine ../saved_models/input_model_for_cycle_{0!s}.pdb'.format(nextCycle) +
+            ' ../free.mtz'
+            ' ../{0!s}'.format(cif_name) +
+            ' output.prefix="refine"'
+            ' refinement.input.xray_data.labels="F,SIGF"'
+            ' refinement.input.xray_data.r_free_flags.label="FreeR_flag"'
+            ' refinement.input.xray_data.r_free_flags.test_flag_value=0\n'
+            'cd {0!s}\n'.format(os.path.join(projectDir, xtal).replace('/Volumes/offline-staff', '/data/staff')) +
+            'ln -s ./Refine_{0!s}/refine_001.pdb refine.pdb\n'.format(nextCycle) +
+            'ln -s ./Refine_{0!s}/refine_001.mtz refine.mtz\n'.format(nextCycle) +
+            'ln -s ./Refine_{0!s}/refine_001.cif refine.cif\n'.format(nextCycle) +
+            '/bin/rm refinement_in_progress\n'
+
+        )
+        print('writing phenix_{0!s}.sh in {1!s}'.format(nextCycle, os.path.join(projectDir, xtal, "scripts")))
+        f = open('phenix_{0!s}.sh'.format(nextCycle), 'w')
+        f.write(cmd)
+        f.close()
+
+        print('submitting job...')
+        print('ssh offline-fe1 "cd {0!s}; sbatch phenix_{1!s}.sh"'.format(os.path.join(projectDir, xtal, "scripts").replace('/Volumes/offline-staff', '/data/staff'), nextCycle))
+        os.system('ssh offline-fe1 "cd {0!s}; sbatch phenix_{1!s}.sh"'.format(os.path.join(projectDir, xtal, "scripts").replace('/Volumes/offline-staff', '/data/staff'), nextCycle))
 
 
     def run_refmac_unix_script(self, nextCycle, project_data, xtal):
@@ -942,11 +978,18 @@ class main_window(object):
 
     def prepare_refinement_batch_script(self, nextCycle):
         print('preparing refinement script...')
-#        if os.name == 'nt':
+        print('chcking if {0!s} exists'.format(os.path.join(self.projectDir, self.xtal, "REFINE_AS_ENSEMBLE")))
+
+        #        if os.name == 'nt':
 #            command_line_scripts.prepare_refmac_windows_script(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
 #        else:
 #            command_line_scripts.prepare_refmac_unix_script(nextCycle, self.mtz_free, self.ligand_cif, self.project_data, self.xtal)
-        command_line_scripts().prepare_buster_maxiv_script(nextCycle, self.ligand_cif, self.projectDir, self.xtal)
+        if os.path.isfile(os.path.join(self.projectDir, self.xtal, "REFINE_AS_ENSEMBLE")):
+            print('running phenix because found {0!s}'.format(os.path.join(self.projectDir, self.xtal, "REFINE_AS_ENSEMBLE")))
+            command_line_scripts().prepare_phenix_maxiv_script(nextCycle, self.ligand_cif, self.projectDir, self.xtal)
+        else:
+            print('no ensemble refinement; running buster...')
+            command_line_scripts().prepare_buster_maxiv_script(nextCycle, self.ligand_cif, self.projectDir, self.xtal)
 
     def remove_files_from_previous_cycle(self):
         os.chdir(os.path.join(self.projectDir, self.xtal))
