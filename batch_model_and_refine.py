@@ -461,6 +461,7 @@ class command_line_scripts(object):
             ' refinement.input.xray_data.labels="F,SIGF"'
             ' refinement.input.xray_data.r_free_flags.label="FreeR_flag"'
             ' refinement.input.xray_data.r_free_flags.test_flag_value=0\n'
+            'phenix.mtz_as_cif refine_001.mtz\n'
             'cd {0!s}\n'.format(os.path.join(projectDir, xtal).replace('/Volumes/offline-staff', '/data/staff')) +
             'ln -s ./Refine_{0!s}/refine_001.pdb refine.pdb\n'.format(nextCycle) +
             'ln -s ./Refine_{0!s}/refine_001.mtz refine.mtz\n'.format(nextCycle) +
