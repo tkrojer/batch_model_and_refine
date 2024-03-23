@@ -425,6 +425,8 @@ class command_line_scripts(object):
             'ln -s ./Refine_{0!s}/refine.pdb .\n'.format(nextCycle) +
             'ln -s ./Refine_{0!s}/refine.mtz .\n'.format(nextCycle) +
             'ln -s ./Refine_{0!s}/BUSTER_model.cif refine.cif\n'.format(nextCycle) +
+            'ln -s ./Refine_{0!s}/BUSTER_refln.cif refine_sf.cif\n'.format(nextCycle) +
+            '/data/staff/biomax/tobias/software/MAXIV_tools/pdb_validate_cif.sh -m refine.cif -s refine_sf.cif -o refine_{0!s}\n'.format(nextCycle) +
             '/bin/rm refinement_in_progress\n'
 
         )
@@ -466,6 +468,8 @@ class command_line_scripts(object):
             'ln -s ./Refine_{0!s}/refine_001.pdb refine.pdb\n'.format(nextCycle) +
             'ln -s ./Refine_{0!s}/refine_001.mtz refine.mtz\n'.format(nextCycle) +
             'ln -s ./Refine_{0!s}/refine_001.cif refine.cif\n'.format(nextCycle) +
+            'ln -s ./Refine_{0!s}/refine_001.reflections.cif refine_sf.cif\n'.format(nextCycle) +
+            '/data/staff/biomax/tobias/software/MAXIV_tools/pdb_validate_cif.sh -m refine.cif -s refine_sf.cif -o refine_{0!s}\n'.format(nextCycle) +
             '/bin/rm refinement_in_progress\n'
 
         )
