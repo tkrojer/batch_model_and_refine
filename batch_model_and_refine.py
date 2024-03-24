@@ -712,6 +712,15 @@ class main_window(object):
 
 #        self.vbox.add(gtk.Label("\n"))
 
+        frame = gtk.Frame(label='')
+        hbox = gtk.HBox()
+        self.show_outliers_button = gtk.Button(label="Show Outliers")
+        hbox.add(self.show_outliers_button)
+        self.show_outliers_button.connect("clicked", self.show_outliers)
+        #        self.save_current_model_button.set_sensitive(False)
+        frame.add(hbox)
+        self.vbox.pack_start(frame)
+
         frame = gtk.Frame(label='Save')
         hbox = gtk.HBox()
         self.save_current_model_button = gtk.Button(label="Save Model")
@@ -1036,6 +1045,11 @@ class main_window(object):
 
 #        self.run_refinement_batch_script(nextCycle)
 
+    def show_outliers(self, widget):
+        if os.path.isfile(os.path.join(self.projectDir, self.xtal, 'refine.scm')):
+            coot.run_script(os.path.join(self.projectDir, self.xtal, 'refine.scm'))
+            views_panel_gui()
+            
 if __name__ == '__main__':
     main_window().start_gui()
 
