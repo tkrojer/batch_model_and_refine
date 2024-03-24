@@ -1045,11 +1045,15 @@ class main_window(object):
 
 #        self.run_refinement_batch_script(nextCycle)
 
+        self.index += 1
+        self.RefreshData()
+
+
     def show_outliers(self, widget):
         if os.path.isfile(os.path.join(self.projectDir, self.xtal, 'refine.scm')):
             coot.run_script(os.path.join(self.projectDir, self.xtal, 'refine.scm'))
             views_panel_gui()
-            
+
 if __name__ == '__main__':
     main_window().start_gui()
 
