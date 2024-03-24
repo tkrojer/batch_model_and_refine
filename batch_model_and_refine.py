@@ -427,6 +427,7 @@ class command_line_scripts(object):
             'ln -s ./Refine_{0!s}/BUSTER_model.cif refine.cif\n'.format(nextCycle) +
             'ln -s ./Refine_{0!s}/BUSTER_refln.cif refine_sf.cif\n'.format(nextCycle) +
             '/data/staff/biomax/tobias/software/MAXIV_tools/pdb_validate_cif.sh -m refine.cif -s refine_sf.cif -o refine_{0!s}\n'.format(nextCycle) +
+            '/data/staff/biomax/tobias/software/MAXIV_tools/table_one.sh -m refine.cif -c process.cif -x xray-report-refine_{0!s}.xml\n'.format(nextCycle) +
             '/bin/rm refinement_in_progress\n'
 
         )
@@ -470,6 +471,7 @@ class command_line_scripts(object):
             'ln -s ./Refine_{0!s}/refine_001.cif refine.cif\n'.format(nextCycle) +
             'ln -s ./Refine_{0!s}/refine_001.reflections.cif refine_sf.cif\n'.format(nextCycle) +
             '/data/staff/biomax/tobias/software/MAXIV_tools/pdb_validate_cif.sh -m refine.cif -s refine_sf.cif -o refine_{0!s}\n'.format(nextCycle) +
+            '/data/staff/biomax/tobias/software/MAXIV_tools/table_one.sh -m refine.cif -c process.cif -x xray-report-refine_{0!s}.xml\n'.format(nextCycle) +
             '/bin/rm refinement_in_progress\n'
 
         )
