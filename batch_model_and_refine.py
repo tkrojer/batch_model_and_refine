@@ -1050,6 +1050,7 @@ class main_window(object):
 
 
     def show_outliers(self, widget):
+        coot.clear_all_views()
         if os.path.isfile(os.path.join(self.projectDir, self.xtal, 'refine.scm')):
             coot.run_script(os.path.join(self.projectDir, self.xtal, 'refine.scm'))
             views_panel_gui()
