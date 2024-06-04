@@ -1015,6 +1015,8 @@ class main_window(object):
             os.remove('refine.mtz')
         if os.path.isfile('refine.cif'):
             os.remove('refine.cif')
+        if os.path.isfile('refine_sf.cif'):
+            os.remove('refine_sf.cif')
 
     def run_refinement_batch_script(self, nextCycle):
         print("hallo")
