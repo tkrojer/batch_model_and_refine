@@ -626,6 +626,11 @@ class main_window(object):
         frame.add(vbox)
         self.vbox.add(frame)
 
+        self.vbox_sample_navigator = gtk.VBox()
+        self.cb = gtk.combo_box_new_text()
+        self.cb.connect("changed", self.select_crystal)
+        vbox.add(self.cb)
+
         outer_frame = gtk.Frame()
         hbox = gtk.HBox()
 
@@ -849,6 +854,9 @@ class main_window(object):
         self.crystal_progressbar.set_fraction(0)
         self.index_label.set_label(str(self.index))
         self.index_total_label.set_label(str(len(self.project_data['datasets'])))
+        self.init_crystal_selection_combobox()
+#        for j in range(len(self.project_data['datasets'])):
+#            print(j, self.project_data['datasets'][j]['sample_ID'])
 
     def update_labels(self):
 #        pdb = pdbtools(self.pdb)
@@ -903,6 +911,8 @@ class main_window(object):
         self.update_params()
 
         self.update_labels()
+
+        self.update_crystal_selection_combobox()
 
         coot.set_nomenclature_errors_on_read("ignore")
 #        print('self.pdb {0!s}'.format(self.pdb))
@@ -963,6 +973,38 @@ class main_window(object):
     def forward(self, widget):
         self.index += 1
         self.RefreshData()
+
+
+
+    def select_crystal(self, widget):
+        xtal = str(widget.get_active_text())
+        print('new selection: {0!s}'.format(xtal))
+        # self.project_data['datasets'][self.index]['sample_ID']
+        for i in range(len(self.project_data['datasets'])):
+#            print(i, self.project_data['datasets'][i]['sample_ID'])
+            if xtal == self.project_data['datasets'][i]['sample_ID']:
+                self.index = i
+                break
+        self.RefreshData()
+
+
+    def update_crystal_selection_combobox(self):
+        print('updating crystal selection combobox')
+        for i in range(len(self.project_data['datasets'])):
+            xtal = self.project_data['datasets'][i]['sample_ID']
+            if xtal == self.xtal:
+                self.cb.set_active(i)
+                break
+
+    def init_crystal_selection_combobox(self):
+        print('removing all entries from crystal selection combobox')
+        if len(self.project_data['datasets']) != 0:
+            for i in range(len(self.project_data['datasets'])):
+                self.cb.remove_text(0)
+        print('adding new entries from crystal selection combobox')
+        for i in range(len(self.project_data['datasets'])):
+            xtal = self.project_data['datasets'][i]['sample_ID']
+            self.cb.append_text(xtal)
 
     def cancel(self, widget):
         self.window.destroy()
